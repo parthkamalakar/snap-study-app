@@ -1,5 +1,5 @@
 {
-  "buildCommand": null,
-  "outputDirectory": ".",
+  "buildCommand": "cp -R public dist",
+  "outputDirectory": "dist",
   "cleanUrls": true
 }
