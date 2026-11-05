@@ -1,9 +1,0 @@
-{
-  "name": "snap-study-local",
-  "version": "1.0.0",
-  "description": "Class 6 AI tutor that runs on your own computer with a local vision model (Ollama).",
-  "private": true,
-  "engines": {
-    "node": ">=18"
-  }
-}
