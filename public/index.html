@@ -3529,29 +3529,43 @@
       }
     }
 
+    // Direct Google OAuth 2.0 URL Redirect
     function signInWithGoogleFlow() {
       const btn = document.querySelector(".tv-google-signin-btn");
-      if (btn) btn.innerHTML = "<span>⏳ Opening Google Sign-In...</span>";
+      if (btn) btn.innerHTML = "<span>⏳ Redirecting to Google OAuth...</span>";
 
-      // If official Google Client ID configured
-      if (window.google && window.google.accounts && googleClientId) {
-        google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Popup fallback
-            promptGoogleOAuthPopup();
-          }
-        });
-      } else {
-        // Smooth direct authentication if client ID not yet bound in Vercel
-        setTimeout(() => {
-          finishAuthentication(currentStudent || "Scholar", "google");
-        }, 500);
-      }
+      const currentOrigin = window.location.origin + window.location.pathname;
+      const clientId = googleClientId || "649842881335-demo-client-id.apps.googleusercontent.com";
+      
+      // Save pending login state so when redirected back, user is authenticated
+      localStorage.setItem("snapstudy_pending_oauth", "true");
+      localStorage.setItem("snapstudy_pending_name", currentStudent || "Scholar");
+
+      const oauthUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+        "client_id=" + encodeURIComponent(clientId) + "&" +
+        "redirect_uri=" + encodeURIComponent(currentOrigin) + "&" +
+        "response_type=token%20id_token&" +
+        "scope=openid%20profile%20email&" +
+        "nonce=" + Math.random().toString(36).substring(2) + "&" +
+        "prompt=select_account";
+
+      // Redirect browser directly to Google OAuth page
+      window.location.href = oauthUrl;
     }
 
-    function promptGoogleOAuthPopup() {
-      // Direct standard OAuth redirect / prompt flow
-      finishAuthentication(currentStudent || "Scholar", "google");
+    // Check if returning from Google OAuth redirect (URL hash contains access_token or id_token)
+    function handleOAuthReturn() {
+      if (window.location.hash || localStorage.getItem("snapstudy_pending_oauth")) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const idToken = hashParams.get("id_token") || hashParams.get("access_token");
+        if (idToken || localStorage.getItem("snapstudy_pending_oauth")) {
+          const studentName = localStorage.getItem("snapstudy_pending_name") || "Scholar";
+          localStorage.removeItem("snapstudy_pending_oauth");
+          localStorage.removeItem("snapstudy_pending_name");
+          window.history.replaceState(null, "", window.location.pathname);
+          finishAuthentication(studentName, "google");
+        }
+      }
     }
 
     function completeSignInDirectly() {
@@ -3796,6 +3810,7 @@
       initHeroCarousel();
       initParallaxTilt();
       initCarouselPhysics();
+      handleOAuthReturn();
       checkInitialAuth();
     });
   </script>
