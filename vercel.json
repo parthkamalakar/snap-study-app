@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cp -R public dist",
+  "buildCommand": "mkdir dist && cp public/index.html public/styles.css dist/",
   "outputDirectory": "dist",
   "cleanUrls": true
 }
