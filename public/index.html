@@ -1703,6 +1703,9 @@
       border-color: rgba(255, 255, 255, 0.4);
       box-shadow: 0 20px 55px rgba(0, 0, 0, 0.9), 0 0 30px rgba(10, 132, 255, 0.4);
     }
+    /* On the tutor screen, lift the quick tools above the chat box so they never cover the input or Ask Tutor */
+    body:has(#view-tutor.active) .tv-remote-hud { bottom: 132px; }
+    @media (max-width: 900px) { .tv-remote-hud { flex-wrap: wrap; max-width: calc(100vw - 32px); right: 16px; border-radius: 24px; } }
     .tv-remote-btn {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1893,6 +1896,78 @@
       left: 150%;
     }
 
+
+    /* ==========================================================================
+       PAGE IDENTIFICATION (subject confirmation + selector)
+       ========================================================================== */
+    .id-overlay { position: fixed; inset: 0; z-index: 100000; display: none; opacity: 0; transition: opacity .45s var(--ease-smooth); overflow: hidden; background: var(--tv-bg); }
+    .id-overlay.open { display: block; }
+    .id-overlay.show { opacity: 1; }
+    .id-backdrop { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(70px) saturate(1.3) brightness(.38); transform: scale(1.1); }
+    .id-shade { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 40%, rgba(2,4,8,.35), rgba(2,4,8,.88) 80%); }
+    .id-stage { position: relative; height: 100%; max-width: 1240px; margin: 0 auto; padding: 56px 56px 48px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 80px; align-items: center; }
+    .id-copy { animation: idRise .7s var(--ease-tv) both; }
+    .id-eyebrow { font-size: 15px; font-weight: 600; letter-spacing: .01em; color: var(--tv-text-muted); margin-bottom: 14px; }
+    .id-title { font-family: var(--font-display); font-size: clamp(44px, 6vw, 76px); font-weight: 700; letter-spacing: -.035em; line-height: 1.02; }
+    .id-topic { margin-top: 14px; font-size: 22px; color: var(--tv-text-secondary); letter-spacing: -.01em; }
+    .id-topic b { color: #fff; font-weight: 600; }
+    .id-ask { margin-top: 52px; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+    .id-note { margin-top: 16px; font-size: 17px; line-height: 1.5; color: var(--tv-text-secondary); max-width: 440px; }
+    .id-actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .id-btn { font: 600 17px/1 var(--font-text); letter-spacing: -.005em; padding: 17px 30px; border-radius: 12px; border: 0; cursor: pointer; color: #fff; background: rgba(255,255,255,.14); transition: transform .35s var(--ease-tv), background .25s, box-shadow .35s var(--ease-tv); }
+    .id-btn:hover, .id-btn:focus-visible { transform: scale(1.045); background: rgba(255,255,255,.22); outline: none; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+    .id-btn.primary { background: #fff; color: #0b0d12; }
+    .id-btn.primary:hover, .id-btn.primary:focus-visible { background: #fff; }
+    .id-btn[disabled] { opacity: .35; pointer-events: none; }
+    .id-link { background: none; border: 0; color: var(--tv-text-muted); font: 500 15px var(--font-text); cursor: pointer; padding: 10px 4px; transition: color .2s; }
+    .id-link:hover, .id-link:focus-visible { color: #fff; outline: none; }
+    .id-photo { position: relative; justify-self: center; animation: idRise .8s .08s var(--ease-tv) both; }
+    .id-photo img { display: block; max-width: 100%; max-height: 70vh; border-radius: 14px; box-shadow: 0 50px 100px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.09); transition: filter .6s, transform .8s var(--ease-tv); }
+    .id-photo.busy img { filter: brightness(.7); transform: scale(.985); }
+    .id-bar { position: absolute; left: 0; right: 0; bottom: -22px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; opacity: 0; transition: opacity .3s; }
+    .id-photo.busy .id-bar { opacity: 1; }
+    .id-bar::after { content: ""; position: absolute; top: 0; bottom: 0; width: 30%; background: #fff; border-radius: 2px; animation: idSlide 1.4s var(--ease-smooth) infinite; }
+    .id-select { grid-template-columns: 1fr; align-content: center; gap: 36px; }
+    .id-select .id-title { font-size: clamp(36px, 4.4vw, 56px); }
+    .id-shelf { display: flex; gap: 20px; overflow-x: auto; padding: 26px 40px 40px; margin: -26px -40px -40px; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+    .id-shelf::-webkit-scrollbar { display: none; }
+    .id-poster { flex: 0 0 auto; width: 186px; aspect-ratio: 2 / 3; border-radius: 14px; border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; scroll-snap-align: center; background: #10131c center / cover; color: #fff; text-align: left; box-shadow: 0 14px 30px rgba(0,0,0,.45); transition: transform .45s var(--ease-tv), box-shadow .45s var(--ease-tv); }
+    .id-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.82)); }
+    .id-poster span { position: absolute; left: 16px; right: 14px; bottom: 15px; z-index: 1; font: 600 18px/1.15 var(--font-display); letter-spacing: -.015em; }
+    .id-poster:hover, .id-poster:focus-visible { transform: scale(1.05) translateY(-4px); box-shadow: 0 30px 56px rgba(0,0,0,.6); outline: none; }
+    .id-poster[aria-pressed="true"] { transform: scale(1.05) translateY(-4px); box-shadow: 0 0 0 3px #fff, 0 30px 56px rgba(0,0,0,.6); }
+    .id-poster.suggested:not([aria-pressed="true"]) span::before { content: "Suggested"; display: block; font: 600 11px var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .65; margin-bottom: 5px; }
+    .id-select .id-actions { margin-top: 0; }
+    .tv-session-chip { font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @keyframes idRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes idSlide { from { left: -30%; } to { left: 100%; } }
+    @media (max-width: 860px) {
+      .id-stage { grid-template-columns: 1fr; gap: 36px; padding: 28px 24px; align-content: center; overflow-y: auto; }
+      .id-photo { order: -1; }
+      .id-photo img { max-height: 30vh; }
+      .id-ask { margin-top: 28px; }
+      .id-poster { width: 148px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .id-overlay, .id-btn, .id-poster, .id-photo img { transition: none; } .id-copy, .id-photo { animation: none; } .id-bar::after { animation: none; width: 100%; } }
+
+    /* ==========================================================================
+       SIGN-IN SCREEN: calm, large type on a dark study photo, no card box
+       ========================================================================== */
+    .tv-login-overlay { background: linear-gradient(rgba(2,4,8,.78), rgba(2,4,8,.95)), url("https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1800&auto=format&fit=crop&q=70") center / cover no-repeat; }
+    .tv-login-dialog { background: transparent; border: 0; box-shadow: none; max-width: 520px; padding: 0; overflow: visible; border-radius: 0; animation: idRise .7s var(--ease-tv) both; }
+    .tv-login-dialog .tv-dialog-badge { display: none; }
+    .tv-login-dialog .tv-dialog-title { font-family: var(--font-display); font-size: clamp(40px, 6vw, 60px); font-weight: 700; letter-spacing: -.035em; line-height: 1.02; margin-bottom: 14px; text-align: left; }
+    .tv-login-dialog .tv-dialog-sub { font-size: 18px; line-height: 1.5; color: var(--tv-text-secondary); margin-bottom: 30px; text-align: left; }
+    .tv-login-dialog .tv-input-label { font-size: 13px; font-weight: 600; color: var(--tv-text-muted); letter-spacing: .02em; margin-bottom: 8px; display: block; }
+    .tv-login-dialog .tv-dialog-input { background: rgba(255,255,255,.08); border: 0; border-radius: 12px; padding: 18px 20px; font-size: 20px; color: #fff; transition: background .25s, box-shadow .25s; }
+    .tv-login-dialog .tv-dialog-input:focus { background: rgba(255,255,255,.13); box-shadow: 0 0 0 2px #fff; outline: none; }
+    .tv-login-dialog .tv-dialog-btn-primary { background: #fff; color: #0b0d12; border: 0; border-radius: 12px; padding: 18px 30px; font-size: 17px; font-weight: 600; box-shadow: none; transition: transform .35s var(--ease-tv), box-shadow .35s var(--ease-tv); }
+    .tv-login-dialog .tv-dialog-btn-primary:hover, .tv-login-dialog .tv-dialog-btn-primary:focus-visible { transform: scale(1.03); box-shadow: 0 18px 40px rgba(0,0,0,.5); outline: none; }
+    .tv-login-dialog .tv-dialog-btn-secondary { background: rgba(255,255,255,.12); border: 0; border-radius: 12px; color: #fff; padding: 16px 24px; font-weight: 600; }
+    .tv-login-dialog .tv-dialog-btn-secondary:hover { background: rgba(255,255,255,.2); }
+    /* Let the sign-in screen scroll on short windows (the content can be taller than the screen) */
+    .tv-login-overlay { overflow-y: auto; -webkit-overflow-scrolling: touch; align-items: flex-start; }
+    .tv-login-dialog { margin: auto; padding: 32px 0; }
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -1917,6 +1992,10 @@
 
         <label class="tv-input-label" for="studentNameInput">Your First Name</label>
         <input type="text" id="studentNameInput" class="tv-dialog-input" placeholder="e.g. Pranav" autocomplete="off" autofocus onkeydown="if(event.key==='Enter') advanceToAuthChoice()" />
+
+        <label class="tv-input-label" for="apiKeyInput" style="margin-top:14px;">Gemini API key <span style="opacity:.55;font-weight:400;">(optional)</span></label>
+        <input type="password" id="apiKeyInput" class="tv-dialog-input" placeholder="Paste your key here" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') advanceToAuthChoice()" />
+        <p style="font-size:12px;line-height:1.5;color:var(--tv-text-muted);margin:-4px 0 14px;">With a free Gemini key from Google AI Studio, Snap Study can really read your photos and answer about them. It stays in this browser only. Ask Pranav or a parent for a key, and never share it with anyone.</p>
 
         <button class="tv-dialog-btn-primary" onclick="advanceToAuthChoice()">
           <span>Continue</span>
@@ -2071,7 +2150,7 @@
           </div>
           <h1 class="tv-hero-title" id="heroTitle">Mastering Fractions & Ratios</h1>
           <p class="tv-hero-desc" id="heroDesc">
-            Snap your textbook page or ask the tutor to break down complex word problems with step-by-step school notebook solutions.
+            Snap your textbook page or ask the tutor to break down complex word problems with step-by-step solutions.
           </p>
           <div class="tv-hero-actions">
             <button class="tv-btn-primary" id="heroBtn1" onclick="switchNav('tutor'); loadPresetQuestion('Explain Fractions with examples')">
@@ -2143,7 +2222,7 @@
                 <div class="tv-quest-check" id="check1">✓</div>
                 <div>
                   <div class="tv-quest-name">Snap or Solve 1 Math Question</div>
-                  <div class="tv-quest-sub">Get a 5-step NCERT ruled notebook answer</div>
+                  <div class="tv-quest-sub">Get a clear 5-step answer</div>
                 </div>
               </div>
               <div class="tv-quest-reward">+50 XP 💎</div>
@@ -2329,11 +2408,11 @@
           <div class="tv-stage-viewport tv-xray-viewport" id="stageViewport" onmousemove="handleXRayMove(event)" onmouseleave="hideXRayLens()">
             <div class="tv-xray-lens" id="xrayLens">
               <div class="tv-xray-crosshair"></div>
-              <div class="tv-xray-pill-tag" id="xrayPillTag">AI Inspection</div>
+              <div class="tv-xray-pill-tag" id="xrayPillTag">Magnifier</div>
             </div>
             <div class="tv-xray-hud-card" id="xrayHudCard">
-              <div class="tv-xray-hud-title"><span>🔍</span> NCERT Visual Formula Scan</div>
-              <div class="tv-xray-hud-val" id="xrayHudText">Inspecting textbook diagram coordinates...</div>
+              <div class="tv-xray-hud-title"><span>🔍</span> Magnifier</div>
+              <div class="tv-xray-hud-val" id="xrayHudText">Move over your photo to zoom in.</div>
             </div>
             <div class="tv-stage-placeholder" id="stagePlaceholder">
               <div style="font-size:42px;">📷</div>
@@ -2365,6 +2444,7 @@
               </div>
             </div>
             <div style="display:flex;gap:6px;">
+              <button class="tv-chip tv-session-chip" id="sessionChip" onclick="openSubjectPicker()" title="Change subject">Mathematics</button>
               <button class="tv-chip" onclick="clearChat()">Clear Chat</button>
             </div>
           </div>
@@ -2406,7 +2486,7 @@
     <main class="tv-view" id="view-homework">
       <div style="margin-bottom:32px;">
         <h1 style="font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;">Homework Photo Solver</h1>
-        <p style="color:var(--tv-text-secondary);font-size:16px;">Snap any textbook exercise or question to get neat school-notebook ready answers</p>
+        <p style="color:var(--tv-text-secondary);font-size:16px;">Snap any textbook exercise or question to get clear step-by-step answers</p>
       </div>
       <div style="background:var(--tv-surface-1);border:1px solid var(--tv-glass-border);border-radius:24px;padding:48px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;max-width:760px;margin:0 auto;">
         <div style="width:72px;height:72px;border-radius:20px;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.3);display:grid;place-items:center;font-size:32px;">
@@ -2414,7 +2494,7 @@
         </div>
         <h2 style="font-family:var(--font-display);font-size:26px;font-weight:700;">Drop your homework page here</h2>
         <p style="color:var(--tv-text-secondary);max-width:480px;font-size:15px;">
-          Supports handwritten notebook math problems, NCERT exercise questions, diagrams, and fill-in-the-blanks.
+          Supports handwritten math problems, NCERT exercise questions, diagrams, and fill-in-the-blanks.
         </p>
         <button class="tv-btn-primary" onclick="triggerPhotoUpload()">Select Photo from Computer</button>
       </div>
@@ -2523,6 +2603,14 @@
     </main>
   </div>
 
+
+  <!-- Page identification overlay -->
+  <div class="id-overlay" id="idOverlay" role="dialog" aria-modal="true" aria-labelledby="idTitle">
+    <div class="id-backdrop" id="idBackdrop"></div>
+    <div class="id-shade"></div>
+    <div class="id-stage" id="idStage"></div>
+  </div>
+
   <!-- Hidden Photo Picker -->
   <input type="file" id="masterPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleFilePicked(event)">
 
@@ -2560,7 +2648,7 @@
           { title: "Getting to Know Plants", desc: "Herbs, shrubs, trees, leaf venation & photosynthesis", query: "What is Photosynthesis and plant structure in Science?" },
           { title: "Body Movements", desc: "Ball and socket joints, pivotal joints & human skeleton", query: "Explain different joints in the human body with examples" },
           { title: "Light, Shadows & Reflections", desc: "Transparent, translucent, opaque objects & pinhole camera", query: "Explain Light, Shadows, and Pinhole camera" },
-          { title: "Separation of Substances", desc: "Winnowing, sieving, filtration & decantation", query: "Explain methods of separating substances with school notebook answer" }
+          { title: "Separation of Substances", desc: "Winnowing, sieving, filtration & decantation", query: "Explain methods of separating substances" }
         ]
       },
       {
@@ -2601,7 +2689,7 @@
         chapters: [
           { title: "Who Did Patrick's Homework?", desc: "Patrick, the elf, and learning self-reliance", query: "Provide chapter summary and Q&A for Who Did Patrick's Homework?" },
           { title: "How the Dog Found Himself a Master", desc: "Journey of dog choosing man as loyal companion", query: "Explain How the Dog Found Himself a Master with moral" },
-          { title: "Taro's Reward", desc: "Story of a thoughtful and obedient woodcutter son", query: "Provide notebook ready Q&A for Taro's Reward" },
+          { title: "Taro's Reward", desc: "Story of a thoughtful and obedient woodcutter son", query: "Give questions and answers for Taro's Reward" },
           { title: "English Grammar: Nouns & Pronouns", desc: "Types of nouns, personal pronouns & subject-verb agreement", query: "Explain Class 6 English grammar: Nouns and Pronouns with rules" }
         ]
       },
@@ -2618,6 +2706,55 @@
           { title: "Algorithms and Flowcharts", desc: "Step-by-step logic, diamond decision boxes & flow lines", query: "How to draw a flowchart and write an algorithm for Class 6" },
           { title: "Internet Ethics & Cybersecurity", desc: "Safe browsing, strong passwords & digital footprints", query: "Explain internet safety rules for school students" }
         ]
+      },
+      {
+        id: "civics",
+        name: "Civics",
+        icon: "⚖️",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,214,10,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=1000&auto=format&fit=crop&q=80",
+        desc: "Diversity, Government, Local Self-Government & Rights in India",
+        chapters: [
+          { title: "Understanding Diversity", desc: "Many languages, faiths and customs, one country", query: "Explain Understanding Diversity in India for Class 6" },
+          { title: "What is Government?", desc: "Levels of government and how decisions are made", query: "Explain what a government is and its levels for Class 6" },
+          { title: "Panchayati Raj", desc: "Gram Sabha, Gram Panchayat and village self-government", query: "Explain Panchayati Raj and the Gram Panchayat" }
+        ]
+      },
+      {
+        id: "hindi",
+        name: "Hindi",
+        icon: "अ",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,69,58,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1000&auto=format&fit=crop&q=80",
+        desc: "Vasant: poems, stories, vyakaran and patra lekhan",
+        chapters: [
+          { title: "Sangya, Sarvanam, Visheshan", desc: "Naming words, pronouns and describing words", query: "Explain Hindi vyakaran: sangya, sarvanam and visheshan" },
+          { title: "Patra Lekhan", desc: "How to write a letter in Hindi", query: "Explain how to write a formal and informal letter in Hindi" }
+        ]
+      },
+      {
+        id: "marathi",
+        name: "Marathi",
+        icon: "अ",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,159,10,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1000&auto=format&fit=crop&q=80",
+        desc: "Marathi grammar, reading passages and essay writing",
+        chapters: [
+          { title: "Naam, Sarvanaam, Visheshan", desc: "Parts of speech in Marathi", query: "Explain Marathi grammar: naam, sarvanaam and visheshan" },
+          { title: "Nibandh Lekhan", desc: "Writing a short essay in Marathi", query: "How to write a short essay in Marathi" }
+        ]
+      },
+      {
+        id: "gk",
+        name: "General Knowledge",
+        icon: "🌍",
+        theme: "radial-gradient(circle at 50% 0%, rgba(100,210,255,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1000&auto=format&fit=crop&q=80",
+        desc: "India, the world, famous people, sports and current facts",
+        chapters: [
+          { title: "India at a Glance", desc: "Capitals, rivers, national symbols and states", query: "Tell me key general knowledge facts about India for Class 6" },
+          { title: "Famous People & Inventions", desc: "Scientists, leaders and the things they gave the world", query: "Tell me about famous inventors and scientists for Class 6" }
+        ]
       }
     ];
 
@@ -2626,7 +2763,7 @@
     let currentZoom = 1.0;
 
     // Gamification State
-    let userXp = parseInt(localStorage.getItem("snapstudy_xp") || "0", 10);
+    let userXp = parseInt(localStorage.getItem("snapstudy_xp_v2") || "0", 10);
     let userStreak = parseInt(localStorage.getItem("snapstudy_streak") || "1", 10);
     let userGems = parseInt(localStorage.getItem("snapstudy_gems") || "50", 10);
 
@@ -2720,30 +2857,362 @@
       });
     }
 
-    function selectSubjectAndLearn(sub) {
+    function applySubject(sub) {
       currentSubject = sub;
       document.getElementById("ambientBackdrop").style.background = sub.theme;
       document.getElementById("activeSubjectLabel").textContent = "Active: " + sub.name;
       document.getElementById("chatInput").placeholder = `Ask anything in ${sub.name} or snap a textbook photo...`;
+      updateSessionChip();
+    }
+
+    function selectSubjectAndLearn(sub) {
+      // Picking a subject from the library starts a clean session
+      if (sub.id !== session.subjectId) { session = { subjectId: sub.id, topic: "", confirmed: false }; }
+      applySubject(sub);
       switchNav("tutor");
     }
 
     /* ==========================================================================
        FILE HANDLING & VISUAL CANVAS
        ========================================================================== */
-    function handleFilePicked(e) {
-      const files = Array.from(e.target.files);
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          trayFiles.push({ name: file.name, src: ev.target.result });
-          renderTray();
-          showInCanvas(ev.target.result);
+    /* ==========================================================================
+       PAGE IDENTIFICATION
+       The subject comes from the photo itself, read by the local AI server
+       (Ollama through /api/chat). If that server is not running we say so and
+       let the student pick, we never invent a result.
+       ========================================================================== */
+    let session = { subjectId: null, topic: "", confirmed: false };
+    let idState = null;      // { mode, item, sub, topic, note, hadSession }
+    let idAbort = null;
+    let lastPhotoText = "";
+
+    const escHtml = (t) => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    function prepImage(file) {
+      return new Promise((resolve, reject) => {
+        if (!file.type.startsWith("image/")) return reject(new Error("not an image"));
+        const url = URL.createObjectURL(file);
+        const im = new Image();
+        im.onload = () => {
+          const k = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight));
+          const c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round(im.naturalWidth * k));
+          c.height = Math.max(1, Math.round(im.naturalHeight * k));
+          const g = c.getContext("2d");
+          g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+          g.drawImage(im, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          resolve(c.toDataURL("image/jpeg", 0.85));
         };
-        reader.readAsDataURL(file);
+        im.onerror = () => { URL.revokeObjectURL(url); reject(new Error("unreadable")); };
+        im.src = url;
       });
-      switchNav("tutor");
     }
+
+    async function handleFilePicked(e) {
+      const files = Array.from(e.target.files || []);
+      e.target.value = "";
+      if (!files.length) return;
+      const items = [];
+      for (const f of files) {
+        try { items.push({ name: f.name, src: await prepImage(f) }); } catch (err) { /* skip unreadable */ }
+      }
+      if (!items.length) return;
+      switchNav("tutor");
+      items.forEach(it => trayFiles.push(it));
+      renderTray();
+      showInCanvas(items[0].src);
+      identifyPhoto(items[0]);
+    }
+
+    /* ==========================================================================
+       GEMINI (optional): if a key was pasted at login, photos are read by Gemini.
+       Without a key the free in-browser reader (OCR) is used.
+       ========================================================================== */
+    function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
+    async function callClaude({ system, content, max = 1024, signal }) {   // talks to Gemini
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+        method: "POST", signal,
+        headers: { "content-type": "application/json", "x-goog-api-key": getApiKey() },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: content }],
+          generationConfig: { maxOutputTokens: max, thinkingConfig: { thinkingBudget: 0 } }
+        })
+      });
+      if (!res.ok) {
+        let m = ""; try { m = (await res.json()).error.message; } catch (e) {}
+        const bad = res.status === 401 || res.status === 403 || /API key/i.test(m);
+        if (bad) try { localStorage.removeItem("snapstudy_api_key"); } catch (e) {}
+        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : (m || "Gemini couldn't answer right now.")));
+        err.status = res.status; throw err;
+      }
+      const j = await res.json();
+      const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
+      const out = parts.map(x => x.text || "").join("");
+      if (!out) throw new Error("Gemini sent back an empty answer. Please try again.");
+      return out;
+    }
+    const imgBlock = (src) => ({ inlineData: { mimeType: "image/jpeg", data: src.split(",")[1] } });
+
+    async function detectWithClaude(src, signal) {
+      const ids = SUBJECTS.map(s => s.id).join(", ");
+      const out = await callClaude({
+        signal, max: 400,
+        system: "You look at photos of Class 6 school textbook pages. Use only what you can actually see.",
+        content: [imgBlock(src), { text: `Which subject is this page? Allowed subject values: ${ids}, unknown. Give a topic of at most five words (empty if unsure). Write one or two simple sentences for an 11 year old saying what the page is about. Answer only with JSON like {"subject":"math","topic":"Multiples","about":"..."}.` }]
+      });
+      const m = out.match(/\{[\s\S]*\}/);
+      const j = m ? JSON.parse(m[0]) : {};
+      const raw = String(j.subject || "").toLowerCase().trim();
+      const hit = SUBJECTS.find(s => s.id === raw || s.name.toLowerCase() === raw);
+      const about = String(j.about || "").trim().slice(0, 280);
+      if (!hit) return { status: "unsure", about, text: about };
+      return { status: "ok", subject: hit.id, topic: String(j.topic || "").trim().slice(0, 60), about, text: about };
+    }
+
+    async function answerWithClaude(text, snaps, botMsg, time) {
+      const chatStream = document.getElementById("chatStream");
+      botMsg.innerHTML = `<div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div><div class="tv-msg-bubble">Looking at your photo…</div>`;
+      chatStream.appendChild(botMsg);
+      chatStream.scrollTop = chatStream.scrollHeight;
+      let html, ok = false;
+      try {
+        const out = await callClaude({
+          max: 1200,
+          system: `You are a friendly Class 6 (NCERT) tutor for an 11 year old student. The student is studying ${currentSubject.name}${session.topic ? " (" + session.topic + ")" : ""}. Use simple words and short steps. Answer only about what is really in the photo; if you cannot read something, say so instead of guessing.`,
+          content: [...snaps.map(i => imgBlock(i.src)), { text: text || "Please explain this page and help me with the question." }]
+        });
+        html = escHtml(out).replace(/\n/g, "<br>"); ok = true;
+      } catch (err) {
+        html = escHtml(err.message || "Something went wrong.");
+      }
+      botMsg.innerHTML = `<div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div><div class="tv-msg-bubble">${html}<div class="tv-chat-controls"><button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button></div></div>`;
+      if (ok) {
+        userXp += 25; userGems += 5;
+        localStorage.setItem("snapstudy_xp_v2", userXp); localStorage.setItem("snapstudy_gems", userGems);
+        updateGamificationUI(); updateStudentUI();
+      }
+      chatStream.scrollTop = chatStream.scrollHeight;
+    }
+
+    // Reads the real words on the photo inside the browser (Tesseract OCR, free, no server, no key),
+    // then picks the subject by the words it found. Nothing is guessed from the subject buttons.
+    const SUBJECT_WORDS = {
+      math: { words: /\b(multiples?|factors?|fractions?|numerators?|denominators?|decimals?|integers?|perimeter|area|angles?|triangles?|rectangles?|equations?|algebra|digits?|divisible|shaded|ratio|primes?|lcm|hcf|sum|numbers?|figure it out|average|symmetry|geometry)\b/gi,
+        topics: [[/multiples?/i, "Multiples"], [/factors?/i, "Factors"], [/fractions?|numerator|denominator|shaded/i, "Fractions"], [/decimals?/i, "Decimals"], [/integers?/i, "Integers"], [/perimeter|area/i, "Perimeter and Area"], [/angles?/i, "Angles"], [/primes?/i, "Prime numbers"], [/ratio/i, "Ratio"], [/symmetry/i, "Symmetry"], [/numbers?|digits?/i, "Numbers"]] },
+      science: { words: /\b(plants?|leaf|leaves|photosynthesis|food|nutrients?|vitamins?|magnets?|light|shadows?|motion|water|animals?|cells?|body|materials?|air|soil|roots?|stem|flowers?|sunlight|oxygen|energy)\b/gi,
+        topics: [[/photosynthesis|leaf|leaves|plants?/i, "Plants"], [/magnets?/i, "Magnets"], [/light|shadows?/i, "Light and shadows"], [/food|nutrients?|vitamins?/i, "Food"], [/water/i, "Water"], [/air|oxygen/i, "Air"], [/body/i, "The body"]] },
+      english: { words: /\b(nouns?|verbs?|adjectives?|poem|paragraph|grammar|sentences?|tense|story|passage|author|poet|stanza|synonyms?|antonyms?|pronouns?|adverbs?|comprehension)\b/gi,
+        topics: [[/nouns?|pronouns?/i, "Nouns and pronouns"], [/verbs?|tense/i, "Verbs and tenses"], [/adjectives?/i, "Adjectives"], [/poem|poet|stanza/i, "Poem"], [/passage|comprehension/i, "Reading passage"], [/story/i, "Story"]] },
+      history: { words: /\b(empire|kings?|ancient|harappa|harappan|indus|vedas?|kingdom|archaeolog\w*|dynasty|ashoka|inscriptions?|civili[sz]ation|mohenjo|maurya|gupta|rulers?|temples?)\b/gi,
+        topics: [[/harappa|indus|mohenjo/i, "Indus Valley"], [/vedas?/i, "The Vedas"], [/ashoka|maurya/i, "The Mauryas"], [/archaeolog/i, "Archaeology"], [/kingdom|kings?|rulers?/i, "Kings and kingdoms"]] },
+      geography: { words: /\b(earth|maps?|latitudes?|longitudes?|continents?|oceans?|globe|climate|plateau|mountains?|equator|hemisphere|rivers?|lithosphere|atmosphere|compass)\b/gi,
+        topics: [[/latitudes?|longitudes?/i, "Latitudes and longitudes"], [/maps?/i, "Maps"], [/globe|earth/i, "The Earth"], [/continents?|oceans?/i, "Continents and oceans"], [/mountains?|plateau/i, "Landforms"]] },
+      civics: { words: /\b(government|democracy|panchayat|diversity|constitution|rights|village|election|citizens?|gram sabha|municipal\w*|vote|voting)\b/gi,
+        topics: [[/panchayat|gram sabha/i, "Panchayati Raj"], [/diversity/i, "Diversity"], [/government|democracy/i, "Government"], [/election|vote|voting/i, "Elections"]] },
+      computer: { words: /\b(computers?|scratch|keyboard|internet|binary|software|hardware|algorithms?|flowcharts?|cpu|memory|mouse|password|program\w*|monitor)\b/gi,
+        topics: [[/scratch|program/i, "Coding"], [/algorithm|flowchart/i, "Algorithms"], [/internet|password/i, "Internet safety"], [/binary/i, "Binary"], [/computers?|cpu|hardware/i, "Computers"]] },
+      gk: { words: /\b(capital|national|president|prime minister|inventors?|olympics?|countries|country|famous|awards?|monuments?|currency)\b/gi,
+        topics: [[/capital/i, "Capitals"], [/inventors?/i, "Inventors"], [/olympics?/i, "Sports"], [/national/i, "National symbols"]] }
+    };
+
+    let tessLoading = null;
+    function loadTesseract() {
+      if (window.Tesseract) return Promise.resolve(window.Tesseract);
+      if (!tessLoading) tessLoading = new Promise((res, rej) => {
+        const sc = document.createElement("script");
+        sc.src = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.0/tesseract.min.js";
+        sc.onload = () => res(window.Tesseract);
+        sc.onerror = () => { tessLoading = null; rej(new Error("load")); };
+        document.head.appendChild(sc);
+      });
+      return tessLoading;
+    }
+
+    function pickReadableLine(text, topicRe) {
+      const lines = text.split(/\n+/).map(l => l.replace(/\s+/g, " ").trim()).filter(l => l.length >= 18);
+      const clean = lines.filter(l => (l.match(/[A-Za-z0-9 ,.?'’-]/g) || []).length / l.length > 0.85 && /[a-z]{3}/i.test(l));
+      const best = (topicRe && clean.find(l => topicRe.test(l))) || clean.find(l => /\?|find|what|how|why|explain|define/i.test(l)) || clean[0];
+      return best ? best.slice(0, 150) : "";
+    }
+
+    // Returns { status: "ok"|"unsure"|"unavailable"|"aborted", subject, topic, about, text }
+    async function detectFromImage(src, signal) {
+      let worker;
+      const stop = () => { try { worker && worker.terminate(); } catch (e) {} };
+      try {
+        const T = await loadTesseract();
+        if (signal.aborted) return { status: "aborted" };
+        worker = await T.createWorker("eng");
+        signal.addEventListener("abort", stop);
+        const { data } = await worker.recognize(src);
+        await worker.terminate();
+        if (signal.aborted) return { status: "aborted" };
+        const text = (data.text || "").trim();
+        let best = null, bestScore = 0, bestTopics = null;
+        for (const id of Object.keys(SUBJECT_WORDS)) {
+          const hits = (text.match(SUBJECT_WORDS[id].words) || []).length;
+          if (hits > bestScore) { bestScore = hits; best = id; bestTopics = SUBJECT_WORDS[id].topics; }
+        }
+        // Pages full of digits (tables, sums) are Maths even with few keywords
+        const digits = (text.match(/\d/g) || []).length;
+        if (!best && text.length > 30 && digits / text.length > 0.3) { best = "math"; bestScore = 2; bestTopics = SUBJECT_WORDS.math.topics; }
+        const topicHit = best ? bestTopics.find(t => t[0].test(text)) : null;
+        const line = pickReadableLine(text, topicHit && topicHit[0]);
+        const about = line ? `Some of the writing I could read: “${line}”` : "";
+        if (!best || bestScore < 2) return { status: "unsure", about, text: line };
+        return { status: "ok", subject: best, topic: topicHit ? topicHit[1] : "", about, text: line };
+      } catch (err) {
+        stop();
+        if (signal.aborted) return { status: "aborted" };
+        return { status: "unavailable" };
+      }
+    }
+
+    async function identifyPhoto(item) {
+      if (idAbort) idAbort.abort();
+      const ctl = idAbort = new AbortController();
+      const hadSession = session.confirmed;
+      idState = { mode: "loading", item, hadSession };
+      renderIdentify();
+      let r = null;
+      if (getApiKey()) { try { r = await detectWithClaude(item.src, ctl.signal); } catch (e) { r = null; } }
+      if (!r && !ctl.signal.aborted) r = await detectFromImage(item.src, ctl.signal);
+      if (ctl.signal.aborted || idAbort !== ctl) return;
+      idAbort = null;
+      item.text = r.text || "";
+      if (r.status === "ok") {
+        const sub = SUBJECTS.find(s => s.id === r.subject);
+        if (hadSession && sub.id === session.subjectId) { closeIdentify(); return; }
+        idState = { mode: hadSession ? "mismatch" : "confirm", item, sub, topic: r.topic, about: r.about, hadSession };
+      } else if (hadSession) {
+        closeIdentify();   // can't tell: don't interrupt a study session
+        return;
+      } else {
+        idState = { mode: "select", item, sub: null, topic: "", about: r.about, hadSession,
+          note: r.status === "unsure" ? "We couldn't tell which subject this page is from." : "We couldn't load the page reader. Check your internet, or choose the subject yourself." };
+      }
+      renderIdentify();
+    }
+
+    function openSubjectPicker() {
+      idState = { mode: "select", item: trayFiles[0] || null, sub: SUBJECTS.find(s => s.id === session.subjectId) || null, topic: session.topic, hadSession: false, fromChip: true };
+      renderIdentify();
+    }
+
+    function renderIdentify() {
+      const ov = document.getElementById("idOverlay");
+      const stage = document.getElementById("idStage");
+      const st = idState;
+      const wasOpen = ov.classList.contains("open");
+      document.getElementById("idBackdrop").style.backgroundImage = st.item ? `url("${st.item.src}")` : (currentSubject.bg ? `url("${currentSubject.bg}")` : "none");
+      stage.className = "id-stage" + (st.mode === "select" ? " id-select" : "");
+      const photo = st.item ? `<div class="id-photo ${st.mode === "loading" ? "busy" : ""}"><img src="${st.item.src}" alt="Your uploaded page"><div class="id-bar"></div></div>` : "";
+      let copy = "";
+      if (st.mode === "loading") {
+        copy = `<div class="id-copy"><div class="id-eyebrow">One moment</div><h1 class="id-title" id="idTitle">Reading your page</h1><p class="id-note">The first time can take a little while.</p>
+          <div class="id-actions" style="margin-top:40px"><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else if (st.mode === "confirm") {
+        copy = `<div class="id-copy"><div class="id-eyebrow">We identified your page</div><h1 class="id-title" id="idTitle">${escHtml(st.sub.name)}</h1>
+          ${st.topic ? `<div class="id-topic">Topic: <b>${escHtml(st.topic)}</b></div>` : ""}
+          ${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}
+          <div class="id-ask">Continue with ${escHtml(st.sub.name)}?</div>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" autofocus>Continue</button><button class="id-btn" data-act="change">Change subject</button></div>
+          <div class="id-actions" style="margin-top:6px"><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else if (st.mode === "mismatch") {
+        const cur = SUBJECTS.find(s => s.id === session.subjectId) || currentSubject;
+        copy = `<div class="id-copy"><div class="id-eyebrow">This page looks different</div><h1 class="id-title" id="idTitle">${escHtml(st.sub.name)}</h1>
+          ${st.topic ? `<div class="id-topic">Topic: <b>${escHtml(st.topic)}</b></div>` : ""}
+          ${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}
+          <p class="id-note">You are studying ${escHtml(cur.name)}. Switch to ${escHtml(st.sub.name)}? Switching starts a fresh chat.</p>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" autofocus>Switch to ${escHtml(st.sub.name)}</button><button class="id-btn" data-act="stay">Stay in ${escHtml(cur.name)}</button></div>
+          <div class="id-actions" style="margin-top:6px"><button class="id-link" data-act="change">Choose another subject</button><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else {
+        const picked = st.sub;
+        copy = `<div class="id-copy"><div class="id-eyebrow">${escHtml(st.note || (st.item ? "Your page" : "Study session"))}</div><h1 class="id-title" id="idTitle">Choose a subject</h1>${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}</div>
+          <div class="id-shelf" id="idShelf">${SUBJECTS.map(s => `<button class="id-poster ${st.suggested === s.id ? "suggested" : ""}" data-sub="${s.id}" aria-pressed="${picked && picked.id === s.id}" style="background-image:url('${s.bg}')"><span>${escHtml(s.name)}</span></button>`).join("")}</div>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" ${picked ? "" : "disabled"}>${picked ? "Continue with " + escHtml(picked.name) : "Continue"}</button>
+          ${st.fromChip || !st.item ? `<button class="id-btn" data-act="cancel">Cancel</button>` : (st.detected ? `<button class="id-btn" data-act="back">Back</button>` : "")}
+          ${st.item ? `<button class="id-link" data-act="remove">Remove photo</button>` : ""}</div>`;
+      }
+      stage.innerHTML = st.mode === "select" ? copy : copy + photo;   // selector shows the photo through the blurred backdrop
+      ov.classList.add("open");
+      requestAnimationFrame(() => ov.classList.add("show"));
+      const sel = stage.querySelector('.id-poster[aria-pressed="true"]');
+      if (sel && !wasOpen) setTimeout(() => sel.scrollIntoView({ inline: "center", block: "nearest" }), 60);
+      const f = stage.querySelector("[autofocus]"); if (f) f.focus({ preventScroll: true });
+    }
+
+    function closeIdentify() {
+      const ov = document.getElementById("idOverlay");
+      ov.classList.remove("show");
+      setTimeout(() => { if (!ov.classList.contains("show")) ov.classList.remove("open"); }, 450);
+      idState = null;
+    }
+
+    function startSession(sub, topic, item) {
+      const fresh = !session.confirmed || session.subjectId !== sub.id;
+      if (fresh) {
+        clearChat();
+        // photos from an earlier subject don't carry over into the new session
+        trayFiles = item ? [item] : [];
+        renderTray();
+        if (item) showInCanvas(item.src);
+        else { document.getElementById("activePhoto").style.display = "none"; document.getElementById("stagePlaceholder").style.display = "flex"; }
+      }
+      session = { subjectId: sub.id, topic: topic || (fresh ? "" : session.topic), confirmed: true };
+      applySubject(sub);
+      if (fresh) {
+        const stream = document.getElementById("chatStream");
+        const note = document.createElement("div");
+        note.className = "tv-msg assistant";
+        note.innerHTML = `<div class="tv-msg-bubble">Studying <strong>${escHtml(sub.name)}</strong>${topic ? ` &middot; ${escHtml(topic)}` : ""}. Ask me anything about ${item ? "this page" : "it"}.</div>`;
+        stream.appendChild(note);
+      }
+      closeIdentify();
+    }
+
+    function updateSessionChip() {
+      const chip = document.getElementById("sessionChip");
+      if (!chip) return;
+      chip.textContent = currentSubject.name + (session.topic && session.subjectId === currentSubject.id ? " · " + session.topic : "");
+    }
+
+    function removeIdentifiedPhoto() {
+      if (idAbort) { idAbort.abort(); idAbort = null; }
+      const i = idState && idState.item ? trayFiles.indexOf(idState.item) : -1;
+      closeIdentify();
+      if (i >= 0) removeTray(i);
+    }
+
+    document.getElementById("idOverlay").addEventListener("click", (e) => {
+      const poster = e.target.closest(".id-poster");
+      if (poster && idState) {
+        idState.sub = SUBJECTS.find(s => s.id === poster.dataset.sub);
+        idState.picked = true;
+        renderIdentify();
+        return;
+      }
+      const btn = e.target.closest("[data-act]");
+      if (!btn || !idState) return;
+      const st = idState, act = btn.dataset.act;
+      if (act === "remove") return removeIdentifiedPhoto();
+      if (act === "continue") {
+        if (!st.sub) return;
+        const topic = st.picked ? "" : st.topic;
+        return startSession(st.sub, topic, st.item);
+      }
+      if (act === "stay" || act === "cancel") { return closeIdentify(); }
+      if (act === "change") {
+        idState = { mode: "select", item: st.item, sub: null, topic: "", about: st.about, hadSession: st.hadSession, detected: st, suggested: st.sub ? st.sub.id : null, note: "Choose the right subject" };
+        return renderIdentify();
+      }
+      if (act === "back" && st.detected) { idState = st.detected; return renderIdentify(); }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && idState && idState.mode !== "loading") closeIdentify();
+    });
 
     function renderTray() {
       const tray = document.getElementById("trayPreview");
@@ -2826,7 +3295,9 @@
       setTimeout(() => {
         const botMsg = document.createElement("div");
         botMsg.className = "tv-msg assistant";
+        if (getApiKey()) { answerWithClaude(text, currentSnaps, botMsg, time); return; }
 
+        lastPhotoText = currentSnaps.map(i => i.text || "").join(" ").trim();
         const resp = generateSmartResponse(text, currentSnaps.length > 0);
 
         if (resp.type === "chat") {
@@ -2864,14 +3335,6 @@
                 </div>
               </div>
 
-              <div class="tv-ruled-notebook">
-                <div class="tv-ruled-head">
-                  <span>📝 School Notebook Ready Answer</span>
-                  <span style="cursor:pointer;" onclick="copyText('${resp.notebook.replace(/'/g, "\\'")}')">Copy</span>
-                </div>
-                ${resp.notebook.replace(/\n/g, "<br>")}
-              </div>
-
               <div class="tv-analogy-box">
                 💡 <strong>Everyday Life Analogy:</strong> ${resp.analogy}
               </div>
@@ -2893,14 +3356,6 @@
                 ${resp.bullets.map(b => `<li>${b}</li>`).join("")}
               </ul>
 
-              <div class="tv-ruled-notebook">
-                <div class="tv-ruled-head">
-                  <span>📝 School Notebook Ready Answer</span>
-                  <span style="cursor:pointer;" onclick="copyText('${resp.notebook.replace(/'/g, "\\'")}')">Copy</span>
-                </div>
-                ${resp.notebook.replace(/\n/g, "<br>")}
-              </div>
-
               <div class="tv-analogy-box">
                 💡 <strong>Everyday Example:</strong> ${resp.analogy}
               </div>
@@ -2914,10 +3369,12 @@
         }
 
         chatStream.appendChild(botMsg);
-        userXp += 25;
-        userGems += 5;
-        localStorage.setItem("snapstudy_xp", userXp);
-        localStorage.setItem("snapstudy_gems", userGems);
+        if (!resp.noXp) {
+          userXp += 25;
+          userGems += 5;
+          localStorage.setItem("snapstudy_xp_v2", userXp);
+          localStorage.setItem("snapstudy_gems", userGems);
+        }
         updateGamificationUI();
       updateStudentUI();
         chatStream.scrollTop = chatStream.scrollHeight;
@@ -2927,12 +3384,25 @@
     function generateSmartResponse(rawQuery, hasImages) {
       const q = (rawQuery || "").toLowerCase().trim();
 
+      // A photo is attached: this page has no AI reader, so never answer as if we read it.
+      if (hasImages) {
+        return {
+          type: "chat",
+          noXp: true,
+          text: lastPhotoText
+            ? `Here is some of the writing I could read on your photo:<br><em>&ldquo;${escHtml(lastPhotoText.slice(0, 220))}&rdquo;</em><br><br>
+               I can't fully understand pictures yet. Type the exact question you want help with and I'll explain it.`
+            : `I couldn't read any writing on your photo, so I don't know what is on your page.<br><br>
+               Type the question from the page here and I'll explain it.`
+        };
+      }
+
       // Greetings
       if (/^(hi|hello|hey|good morning|namaste)/i.test(q)) {
         return {
           type: "chat",
           text: `Hello there! 😊 Ready to conquer your Class 6 study goals in <strong>${currentSubject.name}</strong>?<br><br>
-                 You can ask me any math word problem, upload a textbook snapshot, or ask for neat answers to write into your school notebook.`
+                 You can ask me any math word problem, upload a textbook snapshot, or ask for step-by-step help.`
         };
       }
 
@@ -2950,7 +3420,7 @@
             "Step 3: Write as Numerator / Denominator.",
             "Step 4: Check if both numbers share a common factor to reduce to simplest form."
           ],
-          finalAnswer: "Correct fractional value calculated according to school syllabus.",
+          finalAnswer: "Shaded parts ÷ Total equal parts, written in simplest form.",
           notebook: "Question: Find the fraction of shaded portions.\nAnswer:\n1. Total equal parts in figure = 8.\n2. Shaded parts = 3.\n3. Fraction of shaded part = 3/8. Ans.",
           analogy: "Like dividing an 8-slice birthday pizza: if you eat 3 slices, you ate exactly 3/8 of the whole pizza!"
         };
@@ -2988,39 +3458,21 @@
         };
       }
 
-      // Default Math
-      const isMath = currentSubject.id === "math" || /[0-9+\-*\/=]/.test(q) || q.includes("solve") || q.includes("calculate");
-      if (isMath) {
-        return {
-          type: "math",
-          title: "Class 6 Mathematics Step-by-Step Solver",
-          given: "Problem values noted: " + (rawQuery || "Textbook equation"),
-          toFind: "Accurate solution following NCERT / State Board guidelines.",
-          formula: "Standard arithmetic & algebraic operations.",
-          steps: [
-            "Step 1: Write down all given values neatly.",
-            "Step 2: Determine appropriate arithmetic operation (LCM, addition, or division).",
-            "Step 3: Carry out calculations line by line.",
-            "Step 4: Check if fractions or decimals can be further simplified."
-          ],
-          finalAnswer: "Verified answer ready for school tests.",
-          notebook: "Given: Data noted from problem.\nWorking:\nFollowed step-by-step arithmetic steps.\nFinal Result: Underline your final unit and answer clearly. Ans.",
-          analogy: "Treat both sides of an equation like a balanced weighing scale!"
-        };
+      // Plain arithmetic: really calculate it
+      const arith = q.replace(/what is|calculate|solve|=|\?/g, "").replace(/[x×]/g, "*").replace(/÷/g, "/").trim();
+      if (/^[0-9+\-*\/().\s]+$/.test(arith) && /[0-9]\s*[+\-*\/]\s*[0-9(]/.test(arith)) {
+        try {
+          const val = Function('"use strict"; return (' + arith + ')')();
+          if (Number.isFinite(val)) return { type: "chat", text: `<strong>${escHtml(arith.replace(/\*/g, "×").replace(/\//g, "÷"))} = ${Math.round(val * 1e6) / 1e6}</strong>` };
+        } catch (e) { /* fall through */ }
       }
 
-      // Default Lesson
+      // Anything else: be honest instead of giving a made-up answer
       return {
-        type: "lesson",
-        title: `Class 6 ${currentSubject.name} Lesson Breakdown`,
-        summary: `Here is the clear explanation for your question about <strong>${rawQuery || "your study topic"}</strong>:`,
-        bullets: [
-          "Core Idea: Understand the main definition in simple, everyday language.",
-          "Class 6 Focus: Important facts and terms to remember for your school tests.",
-          "Notebook answer prepared below ready to copy."
-        ],
-        notebook: `Subject: ${currentSubject.name}\nTopic: ${rawQuery || "Chapter Lesson"}\nAnswer:\n1. Main definition stated clearly.\n2. Provide key examples or characteristics.\n3. Conclude with importance of the topic. Ans.`,
-        analogy: "Like building blocks: understand the first simple step, and the whole chapter becomes easy!"
+        type: "chat",
+        noXp: true,
+        text: `I don't know that one yet. Without a Gemini key I can only explain a few topics (fractions, photosynthesis, the Indus Valley) and do simple sums.<br><br>
+               To ask me anything in <strong>${escHtml(currentSubject.name)}</strong>, add a Gemini key when you sign in (the box under your name).`
       };
     }
 
@@ -3074,7 +3526,7 @@
         bg: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1600&auto=format&fit=crop&q=80",
         tag: "✨ Featured Spotlight • Class 6 Mathematics",
         title: "Mastering Fractions & Ratios",
-        desc: "Snap your textbook page or ask the tutor to break down complex word problems with step-by-step school notebook solutions.",
+        desc: "Snap your textbook page or ask the tutor to break down complex word problems with step-by-step solutions.",
         preset: "Explain Fractions with examples"
       },
       {
@@ -3288,7 +3740,7 @@
         fb.innerHTML = `<span style="color:var(--tv-accent-emerald);font-weight:bold;">🎉 Correct! +35 XP</span> • ${explanation}`;
         userXp += 35;
         userGems += 10;
-        localStorage.setItem("snapstudy_xp", userXp);
+        localStorage.setItem("snapstudy_xp_v2", userXp);
         localStorage.setItem("snapstudy_gems", userGems);
         updateGamificationUI();
       } else {
@@ -3308,7 +3760,7 @@
       const xp = rewards[num] || 25;
       userXp += xp;
       userGems += 5;
-      localStorage.setItem("snapstudy_xp", userXp);
+      localStorage.setItem("snapstudy_xp_v2", userXp);
       localStorage.setItem("snapstudy_gems", userGems);
       updateGamificationUI();
 
@@ -3333,7 +3785,7 @@
         fb.innerHTML = `<span style="color:var(--tv-accent-emerald);font-weight:bold;">✓ Correct! +20 XP</span><br><span style="color:var(--tv-text-secondary);">${explanation}</span>`;
         userXp += 20;
         userGems += 5;
-        localStorage.setItem("snapstudy_xp", userXp);
+        localStorage.setItem("snapstudy_xp_v2", userXp);
         localStorage.setItem("snapstudy_gems", userGems);
         updateGamificationUI();
       } else {
@@ -3425,6 +3877,12 @@
         return;
       }
       currentStudent = val;
+      const keyInp = document.getElementById("apiKeyInput");
+      if (keyInp) {
+        const k = keyInp.value.trim();
+        try { if (k) localStorage.setItem("snapstudy_api_key", k); } catch (e) {}
+        keyInp.value = "";
+      }
       const greet = document.getElementById("welcomeGreetHeader");
       if (greet) greet.textContent = `Welcome, ${val}!`;
       showAuthStep("authStepMethod");
@@ -3529,13 +3987,70 @@
       }
     }
 
-    // Direct Google OAuth 2.0 URL Redirect
+    /* ==========================================================================
+       CLERK SIGN-IN
+       Paste your Clerk "Publishable key" (starts with pk_test_ or pk_live_) between the quotes.
+       It is safe to put in a web page. NEVER paste the Secret key (sk_...) anywhere here.
+       ========================================================================== */
+    const CLERK_PUBLISHABLE_KEY = "";
+
+    function loadClerk() {
+      return new Promise((resolve, reject) => {
+        if (window.Clerk && window.Clerk.loaded) return resolve(window.Clerk);
+        let domain;
+        try { domain = atob(CLERK_PUBLISHABLE_KEY.split("_").slice(2).join("_")).replace(/\$$/, ""); } catch (e) { return reject(new Error("bad key")); }
+        const sc = document.createElement("script");
+        sc.async = true;
+        sc.crossOrigin = "anonymous";
+        sc.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+        sc.src = `https://${domain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+        sc.onload = async () => {
+          try {
+            await window.Clerk.load();
+            window.Clerk.addListener(({ user }) => {
+              if (user && localStorage.getItem("snapstudy_logged_in") !== "true") {
+                try { localStorage.setItem("snapstudy_user_email", (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) || ""); } catch (e) {}
+                finishAuthentication(user.firstName || currentStudent || "Scholar", "clerk");
+              }
+            });
+            resolve(window.Clerk);
+          } catch (e) { reject(e); }
+        };
+        sc.onerror = () => reject(new Error("load"));
+        document.head.appendChild(sc);
+      });
+    }
+
+    async function signInWithClerk() {
+      try {
+        const clerk = await loadClerk();
+        if (clerk.user) { finishAuthentication(clerk.user.firstName || currentStudent || "Scholar", "clerk"); return; }
+        clerk.openSignIn({});
+      } catch (e) {
+        alert("Sign-in couldn't load. Check your internet, or tap \"Skip for now (Guest Mode)\".");
+      }
+    }
+
+    // Google button: goes through Clerk
     function signInWithGoogleFlow() {
+      if (CLERK_PUBLISHABLE_KEY) return signInWithClerk();
+      alert("Sign-in isn't set up yet. Tap \"Skip for now (Guest Mode)\" to start studying. Your name is already saved.");
+    }
+
+    // (Old direct Google redirect, no longer used)
+    function signInWithGoogleFlowOld() {
+      // Google only accepts a real client ID that the app owner registered for this exact web address.
+      // Without one (or when the page is opened as a file) Google shows the "400 malformed" error,
+      // so we explain it here instead of sending the student to a broken page.
+      if (!googleClientId || window.location.protocol === "file:") {
+        alert("Google sign-in isn't set up for this app yet, so it can't work. Tap \"Skip for now (Guest Mode)\" to start studying. Your name is already saved.");
+        return;
+      }
       const btn = document.querySelector(".tv-google-signin-btn");
       if (btn) btn.innerHTML = "<span>⏳ Redirecting to Google OAuth...</span>";
 
       const currentOrigin = window.location.origin + window.location.pathname;
-      const clientId = googleClientId || "649842881335-demo-client-id.apps.googleusercontent.com";
+      const clientId = googleClientId;
       
       // Save pending login state so when redirected back, user is authenticated
       localStorage.setItem("snapstudy_pending_oauth", "true");
@@ -3558,7 +4073,7 @@
       if (window.location.hash || localStorage.getItem("snapstudy_pending_oauth")) {
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const idToken = hashParams.get("id_token") || hashParams.get("access_token");
-        if (idToken || localStorage.getItem("snapstudy_pending_oauth")) {
+        if (idToken) {
           const studentName = localStorage.getItem("snapstudy_pending_name") || "Scholar";
           localStorage.removeItem("snapstudy_pending_oauth");
           localStorage.removeItem("snapstudy_pending_name");
@@ -3727,40 +4242,35 @@
       }
     }
 
+    // Real magnifier: it zooms into the actual photo under the cursor.
+    // It does not read or describe the page, so it never shows made-up "scan" results.
     function handleXRayMove(e) {
       if (!isXRayActive) return;
+      const img = document.getElementById("activePhoto");
       const stage = document.getElementById("stageViewport");
       const lens = document.getElementById("xrayLens");
       const hudText = document.getElementById("xrayHudText");
       const pill = document.getElementById("xrayPillTag");
       if (!stage || !lens) return;
+      if (!img || img.style.display === "none" || !img.src) { lens.style.display = "none"; return; }
 
-      const rect = stage.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const r = img.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) { lens.style.display = "none"; return; }
 
+      const Z = 2.5;
+      const sr = stage.getBoundingClientRect();
+      const half = lens.offsetWidth / 2 || 110;
+      const px = e.clientX - r.left, py = e.clientY - r.top;
       lens.style.display = "block";
-      lens.style.left = `${x}px`;
-      lens.style.top = `${y}px`;
-
-      // Calculate relative coordinate percentages
-      const pctX = Math.round((x / rect.width) * 100);
-      const pctY = Math.round((y / rect.height) * 100);
-
-      // Dynamic contextual scanning insights based on current subject
-      if (currentSubject.id === "math") {
-        pill.textContent = "FRACTION & GEOMETRY SCAN";
-        hudText.innerHTML = `Identified: <strong>Region (${pctX}%, ${pctY}%)</strong> • Detected: Geometric Division • Fraction formula: <code>Shaded Parts ÷ Total Parts</code>`;
-      } else if (currentSubject.id === "science") {
-        pill.textContent = "BIOLOGY & BOTANY SCAN";
-        hudText.innerHTML = `Identified: <strong>Plant Specimen Coordinates (${pctX}%, ${pctY}%)</strong> • Cellular Structure: Chloroplast active region.`;
-      } else if (currentSubject.id === "history") {
-        pill.textContent = "ARCHAEOLOGICAL SCAN";
-        hudText.innerHTML = `Identified: <strong>Indus Harappan Grid (${pctX}%, ${pctY}%)</strong> • Architecture: Citadel Brick Structure 4700 BP.`;
-      } else {
-        pill.textContent = "AI TEXTBOOK INSPECT";
-        hudText.innerHTML = `Inspecting region (${pctX}%, ${pctY}%): Ready to extract key formula or notebook definitions.`;
-      }
+      lens.style.left = `${e.clientX - sr.left}px`;
+      lens.style.top = `${e.clientY - sr.top}px`;
+      lens.style.backgroundImage = `url("${img.src}")`;
+      lens.style.backgroundRepeat = "no-repeat";
+      lens.style.backgroundSize = `${r.width * Z}px ${r.height * Z}px`;
+      lens.style.backgroundPosition = `${half - px * Z}px ${half - py * Z}px`;
+      if (pill) pill.textContent = "MAGNIFIER";
+      if (hudText) hudText.textContent = "Move over your photo to zoom in on small writing. Press X to turn it off.";
     }
 
     function hideXRayLens() {
@@ -3779,7 +4289,9 @@
 
     function triggerQuickSolverShortcut() {
       switchNav("tutor");
-      loadPresetQuestion("Provide 5-Step NCERT solution for shaded fractions with notebook copy");
+      loadPresetQuestion(trayFiles.length ? "Give a 5-step solution for the question in my photo" : "Provide 5-Step NCERT solution for shaded fractions");
+      const st = document.getElementById("chatStream");
+      setTimeout(() => { st.scrollTop = st.scrollHeight; }, 700);
     }
 
     // Keyboard Cinematic Remote Arrow Navigation (Up, Down, Left, Right, Select)
@@ -3849,7 +4361,7 @@
     </div>
     <button class="tv-remote-btn" id="xrayToggleBtn" onclick="toggleXRayLens()">
       <span>🔬</span>
-      <span>X-Ray Knowledge Lens</span>
+      <span>Magnifier</span>
     </button>
     <button class="tv-remote-btn" onclick="toggleCinematicLight()">
       <span>✨</span>
@@ -3861,5 +4373,27 @@
     </button>
   </div>
 
+
+  <script>
+    // Until a Clerk key is added, hide the sign-in choices that can't really work and make Guest the clear path.
+    (function () {
+      try {
+        if (typeof CLERK_PUBLISHABLE_KEY !== "undefined" && CLERK_PUBLISHABLE_KEY) return;
+        const step = document.getElementById("authStepMethod");
+        if (!step) return;
+        step.querySelectorAll(".tv-google-signin-btn, .tv-auth-divider").forEach(el => el.style.display = "none");
+        step.querySelectorAll("button").forEach(b => {
+          if ((b.getAttribute("onclick") || "").includes("showEmailInputStep")) b.style.display = "none";
+          if ((b.getAttribute("onclick") || "").includes("completeSignInDirectly")) {
+            b.removeAttribute("style");
+            b.className = "tv-dialog-btn-primary";
+            b.innerHTML = "<span>Start studying</span><span>→</span>";
+          }
+        });
+        const sub = step.querySelector(".tv-dialog-sub");
+        if (sub) sub.textContent = "You're all set. Your progress is saved on this device.";
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>

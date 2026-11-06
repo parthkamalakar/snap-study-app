@@ -1,0 +1,4399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snap Study — Class 6 AI Study Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       Cinematic Workspace DESIGN SYSTEM (DEEP LUXURY CINEMATIC THEME)
+       ========================================================================== */
+    :root {
+      --tv-bg: #020408;
+      --tv-canvas: #060911;
+      --tv-surface-1: rgba(255, 255, 255, 0.04);
+      --tv-surface-2: rgba(255, 255, 255, 0.08);
+      --tv-surface-hover: rgba(255, 255, 255, 0.14);
+      --tv-glass: rgba(20, 24, 38, 0.72);
+      --tv-glass-border: rgba(255, 255, 255, 0.14);
+      --tv-glass-glow: rgba(255, 255, 255, 0.32);
+
+      --tv-text-primary: #FFFFFF;
+      --tv-text-secondary: rgba(235, 235, 245, 0.78);
+      --tv-text-muted: rgba(235, 235, 245, 0.48);
+
+      --tv-accent-blue: #0A84FF;
+      --tv-accent-cyan: #64D2FF;
+      --tv-accent-purple: #BF5AF2;
+      --tv-accent-amber: #FFD60A;
+      --tv-accent-emerald: #30D158;
+      --tv-accent-coral: #FF453A;
+
+      --tv-focus-scale: 1.07;
+      --tv-focus-shadow: 0 32px 80px rgba(0, 0, 0, 0.9), 0 0 0 3px #FFFFFF, 0 0 45px rgba(255, 255, 255, 0.45);
+      --tv-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", -system-ui, sans-serif;
+      --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", -system-ui, sans-serif;
+      --font-mono: "SF Mono", Menlo, monospace;
+
+      --ease-tv: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.12);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    html, body {
+      height: 100%;
+      background-color: var(--tv-bg);
+      color: var(--tv-text-primary);
+      font-family: var(--font-text);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Ambient Cinematic Backdrop */
+    .tv-ambient-backdrop {
+      position: fixed;
+      top: -20vh;
+      left: -10vw;
+      width: 120vw;
+      height: 120vh;
+      background: radial-gradient(circle at 45% 15%, rgba(10, 132, 255, 0.15) 0%, rgba(191, 90, 242, 0.08) 35%, rgba(5, 7, 11, 0.98) 75%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(70px);
+      transition: background 1.2s var(--ease-tv);
+    }
+
+    /* App Shell */
+    .tv-app-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Cinematic Top Navigation Bar */
+    header.tv-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 76px;
+      padding: 0 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(9, 12, 20, 0.72);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-bottom: 1px solid var(--tv-glass-border);
+      transition: all 0.3s ease;
+    }
+
+    .tv-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .tv-brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1C2333, #0A101D);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    }
+    .tv-brand-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tv-Cinematic-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--tv-accent-cyan);
+    }
+
+    /* Cinematic Segmented Nav Links */
+    .tv-nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px;
+      border-radius: 36px;
+      border: 1px solid var(--tv-glass-border);
+    }
+    .tv-nav-tab {
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--tv-text-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-tv);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tv-nav-tab:hover {
+      color: #FFF;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .tv-nav-tab.active {
+      color: #000;
+      background: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.35);
+      font-weight: 700;
+    }
+
+    .tv-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .tv-stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--tv-glass-border);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--tv-accent-amber);
+    }
+
+    /* ==========================================================================
+       VIEW CONTAINER (HOME / TUTOR / SUBJECTS / HOMEWORK / NOTES / QUIZ / PROFILE)
+       ========================================================================== */
+    .tv-view {
+      display: none;
+      width: 100%;
+      min-height: calc(100vh - 76px);
+      padding: 32px 48px 80px;
+      animation: tvFadeIn 0.4s var(--ease-tv);
+    }
+    .tv-view.active { display: block; }
+    @keyframes tvFadeIn {
+      from { opacity: 0; transform: scale(0.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ==========================================================================
+       HOME VIEW: Cinematic HERO POSTER + HORIZONTAL CAROUSELS
+       ========================================================================== */
+    .tv-hero-billboard {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 44px;
+      border: 1px solid var(--tv-glass-border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: flex-end;
+      padding: 56px;
+      background-size: cover;
+      background-position: center 30%;
+      transition: all 0.5s var(--ease-tv);
+    }
+    .tv-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,7,11,0.1) 0%, rgba(5,7,11,0.55) 50%, rgba(5,7,11,0.98) 100%),
+                  linear-gradient(90deg, rgba(5,7,11,0.9) 0%, rgba(5,7,11,0.4) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .tv-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .tv-hero-tagline {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--tv-accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tv-hero-title {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: #FFF;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+    }
+    .tv-hero-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--tv-text-secondary);
+      max-width: 580px;
+    }
+    .tv-hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .tv-btn-primary {
+      padding: 13px 28px;
+      border-radius: 14px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: #000;
+      background: #FFFFFF;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s var(--ease-tv);
+      box-shadow: 0 8px 24px rgba(255, 255, 255, 0.25);
+    }
+    .tv-btn-primary:hover {
+      transform: scale(var(--tv-focus-scale));
+      background: #FFFFFF;
+      box-shadow: var(--tv-focus-shadow);
+    }
+    .tv-btn-secondary {
+      padding: 13px 26px;
+      border-radius: 14px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: #FFF;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--tv-glass-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s var(--ease-tv);
+    }
+    .tv-btn-secondary:hover {
+      transform: scale(var(--tv-focus-scale));
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Carousel Sections */
+    .tv-carousel-section {
+      margin-bottom: 48px;
+    }
+    .tv-carousel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .tv-carousel-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF;
+    }
+    .tv-carousel-subtitle {
+      font-size: 13.5px;
+      color: var(--tv-text-muted);
+      margin-top: 2px;
+    }
+    .tv-carousel-seeall {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tv-accent-cyan);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tv-carousel-seeall:hover { text-decoration: underline; }
+
+    /* Horizontal Scroller */
+    .tv-scroller {
+      display: flex;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 14px 4px 28px;
+      margin: -14px -4px -28px;
+    }
+    .tv-scroller::-webkit-scrollbar { height: 6px; }
+    .tv-scroller::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+
+    /* Cinematic Card Tile */
+    /* Replaced by Cinematic Focus Tile */ 
+    /* Cinematic Focus Ring and Parallax Shimmer */
+    .tv-card-tile, .tv-subject-poster, .tv-stat-card, .tv-btn-primary, .tv-btn-secondary {
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      outline: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .tv-card-tile {
+      flex: 0 0 290px;
+      height: 230px;
+      border-radius: 20px;
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      scroll-snap-align: start;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.45s var(--ease-tv), box-shadow 0.45s var(--ease-tv), border-color 0.3s;
+      box-shadow: var(--tv-card-shadow);
+    }
+
+    .tv-card-tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .tv-card-tile:hover, .tv-card-tile:focus {
+      transform: scale(var(--tv-focus-scale)) translateY(-8px);
+      box-shadow: var(--tv-focus-shadow);
+      border-color: rgba(255, 255, 255, 0.85);
+      z-index: 10;
+    }
+
+    .tv-card-tile:hover::before, .tv-card-tile:focus::before {
+      opacity: 1;
+    }
+
+    .tv-card-tile.wide {
+      flex: 0 0 380px;
+      height: 230px;
+    }
+
+    /* Cinematic Hero Billboard Cinematic Style with Carousel Dots */
+    .tv-hero-billboard {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      border-radius: 28px;
+      overflow: hidden;
+      margin-bottom: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: flex-end;
+      padding: 64px 64px 50px 64px;
+      background-size: cover;
+      background-position: center 25%;
+      transition: background-image 0.6s ease-in-out, transform 0.4s var(--ease-tv);
+    }
+
+    .tv-hero-dots {
+      position: absolute;
+      right: 48px;
+      bottom: 48px;
+      display: flex;
+      gap: 10px;
+      z-index: 5;
+    }
+    .tv-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: all 0.3s var(--ease-tv);
+    }
+    .tv-dot.active {
+      width: 32px;
+      border-radius: 10px;
+      background: #FFFFFF;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    }
+
+    .tv-card-tile-old {
+      flex: 0 0 280px;
+      height: 220px;
+      border-radius: 18px;
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.35s var(--ease-tv);
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 22px;
+    }
+    .tv-card-tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.4s var(--ease-tv);
+      z-index: 0;
+    }
+    .tv-card-tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(9,12,20,0.1) 0%, rgba(9,12,20,0.7) 50%, rgba(9,12,20,0.95) 100%);
+      z-index: 1;
+    }
+    .tv-card-tile:hover {
+      transform: scale(var(--tv-focus-scale));
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: var(--tv-focus-shadow);
+      z-index: 10;
+    }
+    .tv-card-tile:hover::before {
+      transform: scale(1.08);
+    }
+    .tv-tile-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tv-tile-pill {
+      align-self: flex-start;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      color: var(--tv-accent-cyan);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 4px;
+    }
+    .tv-tile-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1.25;
+    }
+    .tv-tile-sub {
+      font-size: 12px;
+      color: var(--tv-text-secondary);
+    }
+
+    /* Wide Panoramic Card */
+    .tv-card-tile.wide {
+      flex: 0 0 380px;
+      height: 220px;
+    }
+
+    
+    /* -------------------------------------------------------------
+       Cinematic HOME PAGE ENHANCEMENTS: LIVE WIDGETS & ACTIVITIES
+       ------------------------------------------------------------- */
+    .tv-stats-shelf {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin: 10px 48px 36px 48px;
+    }
+    .tv-stat-card {
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 20px;
+      padding: 20px 24px;
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s var(--ease-tv);
+    }
+    .tv-stat-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+    .tv-stat-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .tv-stat-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFF;
+      font-family: var(--font-display);
+      letter-spacing: -0.5px;
+    }
+    .tv-stat-label {
+      font-size: 13px;
+      color: var(--tv-text-secondary);
+      font-weight: 500;
+    }
+
+    /* Live Interactive Daily Missions & Challenge */
+    .tv-home-dual-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+      margin: 10px 48px 42px 48px;
+    }
+    @media (max-width: 1020px) {
+      .tv-home-dual-grid { grid-template-columns: 1fr; margin: 10px 24px 36px 24px; }
+      .tv-stats-shelf { margin: 10px 24px 28px 24px; }
+    }
+    .tv-glass-panel {
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .tv-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .tv-panel-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+    }
+    .tv-panel-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(10, 132, 255, 0.2);
+      border: 1px solid rgba(10, 132, 255, 0.4);
+      color: var(--tv-accent-cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Daily Quest Items */
+    .tv-quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tv-quest-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s var(--ease-tv);
+      cursor: pointer;
+    }
+    .tv-quest-item:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(4px);
+    }
+    .tv-quest-item.completed {
+      opacity: 0.7;
+      border-color: rgba(48, 209, 88, 0.3);
+      background: rgba(48, 209, 88, 0.08);
+    }
+    .tv-quest-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .tv-quest-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 2px solid var(--tv-text-muted);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      color: transparent;
+      transition: all 0.2s;
+    }
+    .tv-quest-item.completed .tv-quest-check {
+      background: var(--tv-accent-emerald);
+      border-color: var(--tv-accent-emerald);
+      color: #FFF;
+      font-weight: bold;
+    }
+    .tv-quest-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #FFF;
+    }
+    .tv-quest-sub {
+      font-size: 12px;
+      color: var(--tv-text-secondary);
+    }
+    .tv-quest-reward {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--tv-accent-amber);
+      background: rgba(255, 214, 10, 0.12);
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    /* Daily Challenge Interactive Box */
+    .tv-challenge-box {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+    .tv-challenge-question {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #FFF;
+      margin-bottom: 16px;
+    }
+    .tv-challenge-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+    .tv-challenge-opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--tv-glass-border);
+      color: #FFF;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-tv);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tv-challenge-opt-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #FFF;
+      transform: translateX(4px);
+    }
+    .tv-challenge-opt-btn.correct {
+      background: rgba(48, 209, 88, 0.22) !important;
+      border-color: var(--tv-accent-emerald) !important;
+      color: #65FF8F !important;
+      font-weight: 700;
+    }
+    .tv-challenge-opt-btn.wrong {
+      background: rgba(255, 69, 58, 0.22) !important;
+      border-color: var(--tv-accent-coral) !important;
+      color: #FF8A82 !important;
+    }
+    .tv-challenge-feedback {
+      font-size: 13px;
+      line-height: 1.4;
+      min-height: 22px;
+      margin-top: 4px;
+    }
+
+    /* Sound Effects & Interactive Audio Pill */
+    .tv-music-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: #FFF;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-music-pill:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: var(--tv-accent-cyan);
+    }
+    .tv-music-pill.playing {
+      background: rgba(10, 132, 255, 0.25);
+      border-color: var(--tv-accent-cyan);
+      color: var(--tv-accent-cyan);
+    }
+
+    /* Formula & Fact of the Day Banner */
+    .tv-fact-banner {
+      margin: 10px 48px 42px 48px;
+      padding: 24px 32px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(191, 90, 242, 0.18) 0%, rgba(10, 132, 255, 0.12) 100%);
+      border: 1px solid rgba(191, 90, 242, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      backdrop-filter: blur(20px);
+    }
+    @media (max-width: 900px) {
+      .tv-fact-banner { flex-direction: column; align-items: flex-start; margin: 10px 24px 32px 24px; padding: 20px; }
+    }
+
+
+    /* ==========================================================================
+       AI STUDY TUTOR VIEW: CINEMATIC CHAT WITH SPLIT INSPECTOR
+       ========================================================================== */
+    .tv-tutor-container {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 28px;
+      min-height: calc(100vh - 140px);
+    }
+    @media (max-width: 1100px) {
+      .tv-tutor-container { grid-template-columns: 1fr; }
+    }
+
+    /* Left: Visual Photo Stage */
+    .tv-visual-stage {
+      background: rgba(14, 18, 28, 0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: sticky;
+      top: 96px;
+      height: calc(100vh - 144px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+    .tv-stage-header {
+      padding: 16px 22px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--tv-glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tv-stage-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tv-stage-viewport {
+      flex: 1;
+      background: #04060A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+    }
+    .tv-stage-viewport img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      transition: transform 0.25s var(--ease-tv);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+    }
+    .tv-stage-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      color: var(--tv-text-muted);
+      padding: 30px;
+    }
+    .tv-stage-toolbar {
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid var(--tv-glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Right: Conversation Stream */
+    .tv-chat-stage {
+      background: rgba(14, 18, 28, 0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 144px);
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+    .tv-chat-header {
+      padding: 18px 26px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--tv-glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tv-tutor-persona {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .tv-persona-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--tv-accent-blue), var(--tv-accent-cyan));
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      box-shadow: 0 4px 14px rgba(10, 132, 255, 0.4);
+    }
+    .tv-persona-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFF;
+    }
+    .tv-persona-sub {
+      font-size: 12px;
+      color: var(--tv-text-muted);
+    }
+
+    .tv-chat-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: 26px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .tv-chat-stream::-webkit-scrollbar { width: 6px; }
+    .tv-chat-stream::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+    /* Message Bubbles */
+    .tv-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 86%;
+      gap: 6px;
+    }
+    .tv-msg.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .tv-msg.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+      max-width: 92%;
+    }
+    .tv-msg-bubble {
+      padding: 16px 22px;
+      border-radius: 20px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .tv-msg.user .tv-msg-bubble {
+      background: linear-gradient(135deg, #0A84FF, #0066CC);
+      color: #FFF;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35);
+    }
+    .tv-msg.assistant .tv-msg-bubble {
+      background: rgba(30, 38, 56, 0.7);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--tv-glass-border);
+      color: var(--tv-text-primary);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      width: 100%;
+    }
+
+    /* Structured Response Cards */
+    .tv-card-breakdown {
+      margin-top: 14px;
+      background: rgba(10, 14, 24, 0.85);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .tv-card-head {
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--tv-glass-border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--tv-accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tv-card-body {
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    /* School Notebook Styled Ruled Sheet */
+    .tv-ruled-notebook {
+      margin-top: 14px;
+      background-color: #0B101D;
+      background-image: linear-gradient(#1A2234 1px, transparent 1px);
+      background-size: 100% 28px;
+      line-height: 28px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 214, 10, 0.35);
+      color: #FFF9D2;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .tv-ruled-head {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--tv-accent-amber);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .tv-analogy-box {
+      margin-top: 12px;
+      background: rgba(191, 90, 242, 0.1);
+      border: 1px solid rgba(191, 90, 242, 0.3);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 13.5px;
+      color: #E8CFFF;
+    }
+
+    .tv-chat-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tv-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tv-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-chip:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFF;
+      transform: scale(1.04);
+    }
+
+    /* Chat Input Bar */
+    .tv-chat-dock {
+      padding: 18px 26px;
+      background: rgba(18, 24, 36, 0.95);
+      border-top: 1px solid var(--tv-glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tv-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .tv-input-field {
+      flex: 1;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--tv-glass-border);
+      padding: 0 18px;
+      color: #FFF;
+      font-family: var(--font-text);
+      font-size: 14.5px;
+      outline: none;
+      transition: all 0.25s var(--ease-tv);
+    }
+    .tv-input-field:focus {
+      border-color: var(--tv-accent-blue);
+      box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
+    }
+    .tv-attach-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--tv-glass-border);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-attach-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: scale(1.06);
+    }
+    .tv-send-btn {
+      height: 48px;
+      padding: 0 24px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      color: #000;
+      border: none;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.35);
+    }
+
+    /* Thumbnail Tray in Dock */
+    .tv-tray {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .tv-tray-chip {
+      background: rgba(10, 132, 255, 0.15);
+      border: 1px solid rgba(10, 132, 255, 0.4);
+      border-radius: 8px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--tv-accent-cyan);
+    }
+    .tv-tray-chip img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    /* ==========================================================================
+       SUBJECTS VIEW: Cinematic IMMERSIVE GALLERY
+       ========================================================================== */
+    .tv-subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 26px;
+    }
+    .tv-subject-poster {
+      height: 380px;
+      border-radius: 22px;
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 28px;
+      transition: all 0.35s var(--ease-tv);
+    }
+    .tv-subject-poster::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.45s var(--ease-tv);
+      z-index: 0;
+    }
+    .tv-subject-poster::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(9,12,20,0.1) 0%, rgba(9,12,20,0.6) 40%, rgba(9,12,20,0.95) 100%);
+      z-index: 1;
+    }
+    .tv-subject-poster:hover {
+      transform: scale(var(--tv-focus-scale));
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: var(--tv-focus-shadow);
+      z-index: 5;
+    }
+    .tv-subject-poster:hover::before { transform: scale(1.08); }
+    .tv-subject-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tv-subject-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .tv-subject-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFF;
+    }
+    .tv-subject-desc {
+      font-size: 13.5px;
+      color: var(--tv-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Flashcard Flip Card (Practice) */
+    .tv-flashcard {
+      background: rgba(20, 26, 40, 0.85);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      cursor: pointer;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      transition: all 0.3s var(--ease-tv);
+    }
+    .tv-flashcard:hover {
+      transform: scale(1.03);
+      border-color: var(--tv-accent-cyan);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Quiz Option Buttons */
+    .tv-quiz-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 18px;
+      margin: 6px 0;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--tv-glass-border);
+      color: #FFF;
+      font-family: var(--font-text);
+      font-size: 14.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-quiz-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateX(4px);
+      border-color: #FFF;
+    }
+    .tv-quiz-btn.correct {
+      background: rgba(48, 209, 88, 0.2) !important;
+      border-color: var(--tv-accent-emerald) !important;
+      color: #5CE67E !important;
+      font-weight: 700;
+    }
+    .tv-quiz-btn.wrong {
+      background: rgba(255, 69, 58, 0.2) !important;
+      border-color: var(--tv-accent-coral) !important;
+      color: #FF7B72 !important;
+    }
+
+    /* Profile Card */
+    .tv-profile-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .tv-profile-grid { grid-template-columns: 1fr; }
+    }
+    .tv-profile-card {
+      background: var(--tv-surface-1);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 24px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+    }
+    .tv-avatar-large {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--tv-accent-blue), var(--tv-accent-purple));
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      box-shadow: 0 10px 30px rgba(10, 132, 255, 0.4);
+    }
+  
+    /* ==========================================================================
+       PREMIUM Cinematic Workspace MODAL & ONBOARDING SIGN-IN FLOW
+       ========================================================================== */
+    .tv-login-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: radial-gradient(circle at 50% 25%, rgba(18, 24, 38, 0.94) 0%, rgba(2, 4, 8, 0.98) 100%);
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      transition: opacity 0.4s var(--ease-tv), transform 0.4s var(--ease-tv);
+    }
+    .tv-login-overlay.hidden {
+      display: none !important;
+    }
+    .tv-login-dialog {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(22, 28, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 28px;
+      padding: 40px 36px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      animation: tvDialogPop 0.35s var(--ease-tv);
+    }
+    @keyframes tvDialogPop {
+      from { opacity: 0; transform: scale(0.92) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .tv-dialog-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      align-self: flex-start;
+      margin-bottom: 20px;
+    }
+    .tv-dialog-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .tv-dialog-sub {
+      font-size: 14.5px;
+      color: var(--tv-text-secondary);
+      line-height: 1.5;
+      margin-bottom: 26px;
+    }
+    .tv-input-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--tv-text-muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .tv-dialog-input {
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      font-family: var(--font-text);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s var(--ease-tv);
+      box-sizing: border-box;
+      margin-bottom: 18px;
+    }
+    .tv-dialog-input:focus {
+      border-color: #FFFFFF;
+      background: rgba(0, 0, 0, 0.65);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+    }
+    .tv-dialog-btn-primary {
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: 14px;
+      background: #FFFFFF;
+      color: #000000;
+      border: none;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s var(--ease-tv);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+      margin-top: 4px;
+    }
+    .tv-dialog-btn-primary:hover {
+      transform: scale(1.025);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+    }
+    .tv-dialog-btn-secondary {
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-family: var(--font-text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s var(--ease-tv);
+      margin-top: 10px;
+    }
+    .tv-dialog-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: scale(1.015);
+    }
+    .tv-auth-divider {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: var(--tv-text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 18px 0;
+    }
+    .tv-auth-divider::before, .tv-auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .tv-auth-divider span {
+      padding: 0 12px;
+    }
+    .tv-google-signin-btn {
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      font-family: var(--font-text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.25s var(--ease-tv);
+    }
+    .tv-google-signin-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: #FFFFFF;
+      transform: scale(1.02);
+    }
+    .tv-otp-grid {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 16px 0 20px;
+    }
+    .tv-otp-digit {
+      width: 58px;
+      height: 62px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-otp-digit:focus {
+      border-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+  
+    /* ==========================================================================
+       Cinematic SUBJECT CHAPTER DRILLDOWN MODAL
+       ========================================================================== */
+    .tv-chapter-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 88888;
+      background: rgba(2, 4, 8, 0.88);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s var(--ease-tv);
+    }
+    .tv-chapter-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .tv-chapter-modal {
+      width: 100%;
+      max-width: 820px;
+      max-height: 85vh;
+      background: rgba(20, 26, 40, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 28px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.94);
+      transition: transform 0.35s var(--ease-tv);
+    }
+    .tv-chapter-modal-overlay.active .tv-chapter-modal {
+      transform: scale(1);
+    }
+    .tv-modal-banner {
+      height: 220px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 32px 36px;
+    }
+    .tv-modal-banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(20, 26, 40, 0.95) 100%);
+    }
+    .tv-modal-banner-content {
+      position: relative;
+      z-index: 2;
+    }
+    .tv-modal-body {
+      padding: 28px 36px 36px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .tv-chapter-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 18px 22px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.25s var(--ease-tv);
+      cursor: pointer;
+    }
+    .tv-chapter-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateX(6px);
+    }
+    .tv-chapter-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(10, 132, 255, 0.2);
+      color: var(--tv-accent-cyan);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+    .tv-modal-close-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #FFF;
+      font-size: 18px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.2s var(--ease-tv);
+    }
+    .tv-modal-close-btn:hover {
+      background: #FFFFFF;
+      color: #000;
+      transform: scale(1.1);
+    }
+
+    /* Study Timer Widget */
+    .tv-timer-shelf {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--tv-glass-border);
+      border-radius: 16px;
+    }
+    .tv-timer-display {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tv-accent-cyan);
+    }
+    .tv-timer-btn {
+      padding: 5px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFF;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tv-timer-btn:hover {
+      background: #FFF;
+      color: #000;
+    }
+
+    /* Ruled paper red margin line realism */
+    .tv-ruled-notebook {
+      border-left: 5px solid #FF453A !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+  
+    /* ==========================================================================
+       EXCLUSIVE FEATURE: CINEMATIC X-RAY KNOWLEDGE LENS & Cinematic REMOTE HUD
+       (100% Original, zero copyright issues, uniquely engineered for Snap Study)
+       ========================================================================== */
+
+    /* Siri Remote Floating Action HUD (Bottom-Right Cinematic Remote Control) */
+    .tv-remote-hud {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9000;
+      background: rgba(26, 32, 48, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      padding: 8px 14px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8), 0 0 20px rgba(10, 132, 255, 0.25);
+      transition: all 0.3s var(--ease-tv);
+    }
+    .tv-remote-hud:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.9), 0 0 30px rgba(10, 132, 255, 0.4);
+    }
+    /* On the tutor screen, lift the quick tools above the chat box so they never cover the input or Ask Tutor */
+    body:has(#view-tutor.active) .tv-remote-hud { bottom: 132px; }
+    @media (max-width: 900px) { .tv-remote-hud { flex-wrap: wrap; max-width: calc(100vw - 32px); right: 16px; border-radius: 24px; } }
+    .tv-remote-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s var(--ease-tv);
+      outline: none;
+    }
+    .tv-remote-btn:hover {
+      background: #FFFFFF;
+      color: #000000;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.7);
+    }
+    .tv-remote-btn.active {
+      background: var(--tv-accent-cyan);
+      color: #000000;
+      font-weight: 700;
+    }
+
+    /* THE CINEMATIC X-RAY LENS OVERLAY */
+    .tv-xray-viewport {
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    .tv-xray-lens {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      pointer-events: none;
+      border: 2px solid var(--tv-accent-cyan);
+      box-shadow: 0 0 0 7px rgba(10, 132, 255, 0.25), 0 0 50px rgba(100, 210, 255, 0.6), inset 0 0 30px rgba(10, 132, 255, 0.3);
+      backdrop-filter: brightness(1.25) contrast(1.2) saturate(1.4);
+      display: none;
+      z-index: 500;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s ease;
+    }
+    .tv-xray-crosshair {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tv-xray-crosshair::before, .tv-xray-crosshair::after {
+      content: "";
+      position: absolute;
+      background: rgba(100, 210, 255, 0.6);
+    }
+    .tv-xray-crosshair::before { width: 100%; height: 1px; }
+    .tv-xray-crosshair::after { height: 100%; width: 1px; }
+
+    .tv-xray-pill-tag {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--tv-accent-cyan);
+      color: var(--tv-accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Live AI Math Equation & Diagram Inspector Shelf */
+    .tv-xray-hud-card {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(8, 12, 20, 0.9);
+      border: 1px solid rgba(100, 210, 255, 0.35);
+      border-radius: 16px;
+      padding: 14px 18px;
+      backdrop-filter: blur(25px);
+      display: none;
+      animation: tvFadeIn 0.3s ease;
+      z-index: 400;
+    }
+    .tv-xray-hud-title {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--tv-accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tv-xray-hud-val {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-top: 4px;
+    }
+
+    /* TV Ambient Backlight Dynamic Glow */
+    .tv-smart-backlight {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+      transition: background 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+  
+    /* -------------------------------------------------------------
+       HAND-TUNED HARDWARE-ACCELERATED MICRO-INTERACTIONS
+       (Artisan Coded: will-change, GPU rasterization, momentum scroll)
+       ------------------------------------------------------------- */
+    .tv-scroller {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+
+    .tv-card-tile, .tv-subject-poster, .tv-stat-card, .tv-btn-primary, .tv-btn-secondary, .tv-nav-tab, .tv-dialog-btn-primary {
+      will-change: transform, box-shadow;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    /* Hand-crafted silky card elevation */
+    .tv-card-tile {
+      transition: transform 0.4s var(--ease-tv), box-shadow 0.4s var(--ease-tv), border-color 0.25s ease !important;
+    }
+
+    /* Smooth focus pulse and active spring feel */
+    .tv-btn-primary:active, .tv-btn-secondary:active, .tv-dialog-btn-primary:active {
+      transform: scale(0.97) translateY(1px) !important;
+      transition: transform 0.1s var(--ease-smooth) !important;
+    }
+
+    .tv-nav-tab {
+      transition: color 0.25s var(--ease-smooth), background 0.25s var(--ease-smooth), transform 0.25s var(--ease-tv) !important;
+    }
+    .tv-nav-tab:active {
+      transform: scale(0.95);
+    }
+
+    /* Silk view transition */
+    .tv-view {
+      animation: viewSlideFade 0.42s var(--ease-tv) forwards;
+    }
+    @keyframes viewSlideFade {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Organic glass hover lighting sheen */
+    .tv-card-tile::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.75s var(--ease-smooth);
+      pointer-events: none;
+      z-index: 4;
+    }
+    .tv-card-tile:hover::after {
+      left: 150%;
+    }
+
+
+    /* ==========================================================================
+       PAGE IDENTIFICATION (subject confirmation + selector)
+       ========================================================================== */
+    .id-overlay { position: fixed; inset: 0; z-index: 100000; display: none; opacity: 0; transition: opacity .45s var(--ease-smooth); overflow: hidden; background: var(--tv-bg); }
+    .id-overlay.open { display: block; }
+    .id-overlay.show { opacity: 1; }
+    .id-backdrop { position: absolute; inset: -80px; background-size: cover; background-position: center; filter: blur(70px) saturate(1.3) brightness(.38); transform: scale(1.1); }
+    .id-shade { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 40%, rgba(2,4,8,.35), rgba(2,4,8,.88) 80%); }
+    .id-stage { position: relative; height: 100%; max-width: 1240px; margin: 0 auto; padding: 56px 56px 48px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 80px; align-items: center; }
+    .id-copy { animation: idRise .7s var(--ease-tv) both; }
+    .id-eyebrow { font-size: 15px; font-weight: 600; letter-spacing: .01em; color: var(--tv-text-muted); margin-bottom: 14px; }
+    .id-title { font-family: var(--font-display); font-size: clamp(44px, 6vw, 76px); font-weight: 700; letter-spacing: -.035em; line-height: 1.02; }
+    .id-topic { margin-top: 14px; font-size: 22px; color: var(--tv-text-secondary); letter-spacing: -.01em; }
+    .id-topic b { color: #fff; font-weight: 600; }
+    .id-ask { margin-top: 52px; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+    .id-note { margin-top: 16px; font-size: 17px; line-height: 1.5; color: var(--tv-text-secondary); max-width: 440px; }
+    .id-actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .id-btn { font: 600 17px/1 var(--font-text); letter-spacing: -.005em; padding: 17px 30px; border-radius: 12px; border: 0; cursor: pointer; color: #fff; background: rgba(255,255,255,.14); transition: transform .35s var(--ease-tv), background .25s, box-shadow .35s var(--ease-tv); }
+    .id-btn:hover, .id-btn:focus-visible { transform: scale(1.045); background: rgba(255,255,255,.22); outline: none; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+    .id-btn.primary { background: #fff; color: #0b0d12; }
+    .id-btn.primary:hover, .id-btn.primary:focus-visible { background: #fff; }
+    .id-btn[disabled] { opacity: .35; pointer-events: none; }
+    .id-link { background: none; border: 0; color: var(--tv-text-muted); font: 500 15px var(--font-text); cursor: pointer; padding: 10px 4px; transition: color .2s; }
+    .id-link:hover, .id-link:focus-visible { color: #fff; outline: none; }
+    .id-photo { position: relative; justify-self: center; animation: idRise .8s .08s var(--ease-tv) both; }
+    .id-photo img { display: block; max-width: 100%; max-height: 70vh; border-radius: 14px; box-shadow: 0 50px 100px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.09); transition: filter .6s, transform .8s var(--ease-tv); }
+    .id-photo.busy img { filter: brightness(.7); transform: scale(.985); }
+    .id-bar { position: absolute; left: 0; right: 0; bottom: -22px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.12); overflow: hidden; opacity: 0; transition: opacity .3s; }
+    .id-photo.busy .id-bar { opacity: 1; }
+    .id-bar::after { content: ""; position: absolute; top: 0; bottom: 0; width: 30%; background: #fff; border-radius: 2px; animation: idSlide 1.4s var(--ease-smooth) infinite; }
+    .id-select { grid-template-columns: 1fr; align-content: center; gap: 36px; }
+    .id-select .id-title { font-size: clamp(36px, 4.4vw, 56px); }
+    .id-shelf { display: flex; gap: 20px; overflow-x: auto; padding: 26px 40px 40px; margin: -26px -40px -40px; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+    .id-shelf::-webkit-scrollbar { display: none; }
+    .id-poster { flex: 0 0 auto; width: 186px; aspect-ratio: 2 / 3; border-radius: 14px; border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; scroll-snap-align: center; background: #10131c center / cover; color: #fff; text-align: left; box-shadow: 0 14px 30px rgba(0,0,0,.45); transition: transform .45s var(--ease-tv), box-shadow .45s var(--ease-tv); }
+    .id-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.82)); }
+    .id-poster span { position: absolute; left: 16px; right: 14px; bottom: 15px; z-index: 1; font: 600 18px/1.15 var(--font-display); letter-spacing: -.015em; }
+    .id-poster:hover, .id-poster:focus-visible { transform: scale(1.05) translateY(-4px); box-shadow: 0 30px 56px rgba(0,0,0,.6); outline: none; }
+    .id-poster[aria-pressed="true"] { transform: scale(1.05) translateY(-4px); box-shadow: 0 0 0 3px #fff, 0 30px 56px rgba(0,0,0,.6); }
+    .id-poster.suggested:not([aria-pressed="true"]) span::before { content: "Suggested"; display: block; font: 600 11px var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .65; margin-bottom: 5px; }
+    .id-select .id-actions { margin-top: 0; }
+    .tv-session-chip { font-weight: 600; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @keyframes idRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes idSlide { from { left: -30%; } to { left: 100%; } }
+    @media (max-width: 860px) {
+      .id-stage { grid-template-columns: 1fr; gap: 36px; padding: 28px 24px; align-content: center; overflow-y: auto; }
+      .id-photo { order: -1; }
+      .id-photo img { max-height: 30vh; }
+      .id-ask { margin-top: 28px; }
+      .id-poster { width: 148px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .id-overlay, .id-btn, .id-poster, .id-photo img { transition: none; } .id-copy, .id-photo { animation: none; } .id-bar::after { animation: none; width: 100%; } }
+
+    /* ==========================================================================
+       SIGN-IN SCREEN: calm, large type on a dark study photo, no card box
+       ========================================================================== */
+    .tv-login-overlay { background: linear-gradient(rgba(2,4,8,.78), rgba(2,4,8,.95)), url("https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1800&auto=format&fit=crop&q=70") center / cover no-repeat; }
+    .tv-login-dialog { background: transparent; border: 0; box-shadow: none; max-width: 520px; padding: 0; overflow: visible; border-radius: 0; animation: idRise .7s var(--ease-tv) both; }
+    .tv-login-dialog .tv-dialog-badge { display: none; }
+    .tv-login-dialog .tv-dialog-title { font-family: var(--font-display); font-size: clamp(40px, 6vw, 60px); font-weight: 700; letter-spacing: -.035em; line-height: 1.02; margin-bottom: 14px; text-align: left; }
+    .tv-login-dialog .tv-dialog-sub { font-size: 18px; line-height: 1.5; color: var(--tv-text-secondary); margin-bottom: 30px; text-align: left; }
+    .tv-login-dialog .tv-input-label { font-size: 13px; font-weight: 600; color: var(--tv-text-muted); letter-spacing: .02em; margin-bottom: 8px; display: block; }
+    .tv-login-dialog .tv-dialog-input { background: rgba(255,255,255,.08); border: 0; border-radius: 12px; padding: 18px 20px; font-size: 20px; color: #fff; transition: background .25s, box-shadow .25s; }
+    .tv-login-dialog .tv-dialog-input:focus { background: rgba(255,255,255,.13); box-shadow: 0 0 0 2px #fff; outline: none; }
+    .tv-login-dialog .tv-dialog-btn-primary { background: #fff; color: #0b0d12; border: 0; border-radius: 12px; padding: 18px 30px; font-size: 17px; font-weight: 600; box-shadow: none; transition: transform .35s var(--ease-tv), box-shadow .35s var(--ease-tv); }
+    .tv-login-dialog .tv-dialog-btn-primary:hover, .tv-login-dialog .tv-dialog-btn-primary:focus-visible { transform: scale(1.03); box-shadow: 0 18px 40px rgba(0,0,0,.5); outline: none; }
+    .tv-login-dialog .tv-dialog-btn-secondary { background: rgba(255,255,255,.12); border: 0; border-radius: 12px; color: #fff; padding: 16px 24px; font-weight: 600; }
+    .tv-login-dialog .tv-dialog-btn-secondary:hover { background: rgba(255,255,255,.2); }
+    /* Let the sign-in screen scroll on short windows (the content can be taller than the screen) */
+    .tv-login-overlay { overflow-y: auto; -webkit-overflow-scrolling: touch; align-items: flex-start; }
+    .tv-login-dialog { margin: auto; padding: 32px 0; }
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <!-- ======================================================================
+       Cinematic LOGIN & PROFILE SELECTOR GATE
+       ====================================================================== -->
+  <!-- ======================================================================
+       Cinematic Workspace CLEAN ONBOARDING & SIGN-IN MODAL
+       ====================================================================== -->
+  <div class="tv-login-overlay" id="loginOverlay">
+    <div class="tv-login-dialog" id="authDialog">
+      
+      <!-- STEP 1: ASK STUDENT'S NAME FIRST -->
+      <div id="authStepName">
+        <div class="tv-dialog-badge">
+          <span>👋</span> Welcome to Snap Study
+        </div>
+        <h2 class="tv-dialog-title">What is your name?</h2>
+        <p class="tv-dialog-sub">Enter your name to personalize your Class 6 study workspace.</p>
+
+        <label class="tv-input-label" for="studentNameInput">Your First Name</label>
+        <input type="text" id="studentNameInput" class="tv-dialog-input" placeholder="e.g. Pranav" autocomplete="off" autofocus onkeydown="if(event.key==='Enter') advanceToAuthChoice()" />
+
+        <label class="tv-input-label" for="apiKeyInput" style="margin-top:14px;">Gemini API key <span style="opacity:.55;font-weight:400;">(optional)</span></label>
+        <input type="password" id="apiKeyInput" class="tv-dialog-input" placeholder="Paste your key here" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') advanceToAuthChoice()" />
+        <p style="font-size:12px;line-height:1.5;color:var(--tv-text-muted);margin:-4px 0 14px;">With a free Gemini key from Google AI Studio, Snap Study can really read your photos and answer about them. It stays in this browser only. Ask Pranav or a parent for a key, and never share it with anyone.</p>
+
+        <button class="tv-dialog-btn-primary" onclick="advanceToAuthChoice()">
+          <span>Continue</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <!-- STEP 2: CHOOSE SIGN-IN METHOD (GOOGLE OR EMAIL CODE) -->
+      <div id="authStepMethod" style="display:none;">
+        <div class="tv-dialog-badge">
+          <span>🔒</span> Complete Sign In
+        </div>
+        <h2 class="tv-dialog-title" id="welcomeGreetHeader">Nice to meet you!</h2>
+        <p class="tv-dialog-sub">Choose how you would like to sign in to your study account.</p>
+
+        <!-- Option A: Google Sign-in -->
+        <button class="tv-google-signin-btn" onclick="signInWithGoogleFlow()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="tv-auth-divider">
+          <span>or with email verification</span>
+        </div>
+
+        <!-- Option B: Email verification -->
+        <button class="tv-dialog-btn-secondary" onclick="showEmailInputStep()">
+          <span>✉️</span> Continue with Email Verification
+        </button>
+
+        <!-- Quick Guest Skip -->
+        <button class="tv-dialog-btn-secondary" style="background:transparent;border:none;color:var(--tv-text-muted);font-size:13px;margin-top:6px;" onclick="completeSignInDirectly()">
+          Skip for now (Guest Mode) ›
+        </button>
+      </div>
+
+      <!-- STEP 3: EMAIL INPUT FOR OTP -->
+      <div id="authStepEmail" style="display:none;">
+        <div class="tv-dialog-badge">
+          <span>✉️</span> Email Verification
+        </div>
+        <h2 class="tv-dialog-title">Enter your email</h2>
+        <p class="tv-dialog-sub">We'll send a 4-digit code to verify your account.</p>
+
+        <label class="tv-input-label" for="userEmailInput">Email Address</label>
+        <input type="email" id="userEmailInput" class="tv-dialog-input" placeholder="student@example.com" autocomplete="off" onkeydown="if(event.key==='Enter') sendOtpCode()" />
+
+        <button class="tv-dialog-btn-primary" onclick="sendOtpCode()">
+          <span>Send 4-Digit Code</span>
+        </button>
+        <button class="tv-dialog-btn-secondary" onclick="backToMethodStep()">
+          <span>← Back</span>
+        </button>
+      </div>
+
+      <!-- STEP 4: ENTER 4-DIGIT VERIFICATION CODE -->
+      <div id="authStepOtp" style="display:none;">
+        <div class="tv-dialog-badge">
+          <span>🔢</span> Enter Verification Code
+        </div>
+        <h2 class="tv-dialog-title">Check your email</h2>
+        <p class="tv-dialog-sub">
+          Sent code to <strong id="otpTargetDisplay" style="color:#FFF;"></strong>
+          <br><span style="font-size:12px;color:var(--tv-text-muted);">(Verification Code: <span id="hintCodeDisplay" style="color:var(--tv-accent-cyan);font-weight:700;"></span>)</span>
+        </p>
+
+        <div class="tv-otp-grid">
+          <input type="text" maxlength="1" class="tv-otp-digit" id="d1" oninput="handleOtpInput(this, 'd2')" />
+          <input type="text" maxlength="1" class="tv-otp-digit" id="d2" oninput="handleOtpInput(this, 'd3')" />
+          <input type="text" maxlength="1" class="tv-otp-digit" id="d3" oninput="handleOtpInput(this, 'd4')" />
+          <input type="text" maxlength="1" class="tv-otp-digit" id="d4" oninput="handleOtpInput(this, null)" />
+        </div>
+
+        <button class="tv-dialog-btn-primary" onclick="verifyOtpAndEnter()">
+          <span>Verify & Start Learning</span>
+        </button>
+        <div id="otpErrBox" style="font-size:13px;text-align:center;margin-top:10px;min-height:20px;"></div>
+        <button class="tv-dialog-btn-secondary" onclick="showEmailInputStep()">
+          <span>← Change Email</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Atmospheric Background Ambient Lighting -->
+  <div class="tv-ambient-backdrop" id="ambientBackdrop"></div>
+
+  <div class="tv-app-container">
+    <!-- Cinematic Glass Navigation Bar -->
+    <header class="tv-nav">
+      <div class="tv-brand" onclick="switchNav('home')" style="cursor:pointer;">
+        <div class="tv-brand-logo">📸</div>
+        <div>
+          <div class="tv-brand-title">
+            Snap Study
+            <span class="tv-Cinematic-badge">Pro Edition</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Centered Cinematic Navigation Pills -->
+      <nav class="tv-nav-menu">
+        <button class="tv-nav-tab active" data-nav="home" onclick="switchNav('home')">Home</button>
+        <button class="tv-nav-tab" data-nav="tutor" onclick="switchNav('tutor')">AI Tutor</button>
+        <button class="tv-nav-tab" data-nav="subjects" onclick="switchNav('subjects')">Subjects</button>
+        <button class="tv-nav-tab" data-nav="homework" onclick="switchNav('homework')">Homework</button>
+        <button class="tv-nav-tab" data-nav="practice" onclick="switchNav('practice')">Practice</button>
+        <button class="tv-nav-tab" data-nav="profile" onclick="switchNav('profile')">Profile</button>
+      </nav>
+
+      <!-- Right Gamification / Rewards Status + User Profile Switcher -->
+      <div class="tv-header-actions">
+        <div class="tv-stat-pill" title="Daily Learning Streak">
+          <span>🔥</span> <span id="streakNav">1 Day Streak</span>
+        </div>
+        <div class="tv-stat-pill" style="color:var(--tv-accent-cyan)" title="Earned XP">
+          <span>⚡</span> <span id="xpNav">0 XP</span>
+        </div>
+        <div class="tv-stat-pill" style="color:var(--tv-accent-purple)" title="Snap Gems">
+          <span>💎</span> <span id="gemsNav">50 Gems</span>
+        </div>
+        <!-- Cinematic Focus Timer Pill -->
+        <div class="tv-timer-shelf" title="Study Focus Timer">
+          <span>⏱️</span>
+          <span class="tv-timer-display" id="studyTimerDisplay">25:00</span>
+          <button class="tv-timer-btn" id="timerToggleBtn" onclick="toggleStudyTimer()">▶ Start</button>
+        </div>
+
+        <button class="tv-user-nav-btn" onclick="openLoginModal()" title="Switch Account / Sign In">
+          <span id="navUserAvatar">👤</span>
+          <span id="navUserName">Pranav</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         1. HOME VIEW (Cinematic DASHBOARD)
+         ====================================================================== -->
+    <main class="tv-view active" id="view-home">
+      <!-- Cinematic Cinematic Hero Billboard -->
+      <section class="tv-hero-billboard" id="heroBillboard" style="background-image: url('https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1600&auto=format&fit=crop&q=80')">
+        <div class="tv-hero-overlay"></div>
+        <div class="tv-hero-content" id="heroContent">
+          <div class="tv-hero-tagline" id="heroTagline">
+            <span>✨</span> Continue Learning • Class 6 Mathematics
+          </div>
+          <h1 class="tv-hero-title" id="heroTitle">Mastering Fractions & Ratios</h1>
+          <p class="tv-hero-desc" id="heroDesc">
+            Snap your textbook page or ask the tutor to break down complex word problems with step-by-step solutions.
+          </p>
+          <div class="tv-hero-actions">
+            <button class="tv-btn-primary" id="heroBtn1" onclick="switchNav('tutor'); loadPresetQuestion('Explain Fractions with examples')">
+              <span>▶</span> Open AI Tutor
+            </button>
+            <button class="tv-btn-secondary" id="heroBtn2" onclick="triggerPhotoUpload()">
+              <span>📸</span> Upload Textbook Photo
+            </button>
+          </div>
+        </div>
+        <!-- Cinematic Carousel Indicators -->
+        <div class="tv-hero-dots">
+          <div class="tv-dot active" onclick="setHeroSlide(0)"></div>
+          <div class="tv-dot" onclick="setHeroSlide(1)"></div>
+          <div class="tv-dot" onclick="setHeroSlide(2)"></div>
+          <div class="tv-dot" onclick="setHeroSlide(3)"></div>
+        </div>
+      </section>
+
+      <!-- Cinematic Live Study HUD (Stats, Activity, Ambient Focus) -->
+      <section class="tv-stats-shelf">
+        <div class="tv-stat-card">
+          <div class="tv-stat-icon-wrap" style="background: rgba(255, 159, 10, 0.15); color: #FF9F0A;">🔥</div>
+          <div>
+            <div class="tv-stat-num" id="homeStreakNum">1 Day</div>
+            <div class="tv-stat-label">Daily Study Streak</div>
+          </div>
+        </div>
+
+        <div class="tv-stat-card">
+          <div class="tv-stat-icon-wrap" style="background: rgba(10, 132, 255, 0.15); color: #64D2FF;">⚡</div>
+          <div>
+            <div class="tv-stat-num" id="homeXpNum">0 XP</div>
+            <div class="tv-stat-label">Total Mastery XP</div>
+          </div>
+        </div>
+
+        <div class="tv-stat-card">
+          <div class="tv-stat-icon-wrap" style="background: rgba(48, 209, 88, 0.15); color: #30D158;">🎯</div>
+          <div>
+            <div class="tv-stat-num">Class 6</div>
+            <div class="tv-stat-label">NCERT & CBSE Board</div>
+          </div>
+        </div>
+
+        <div class="tv-stat-card" style="cursor:pointer;" onclick="toggleFocusMusic()">
+          <div class="tv-stat-icon-wrap" id="musicIconWrap" style="background: rgba(191, 90, 242, 0.15); color: #BF5AF2;">🎧</div>
+          <div>
+            <div class="tv-stat-num" style="font-size:18px;" id="musicStatusText">Lo-Fi Study Mode</div>
+            <div class="tv-stat-label" id="musicSubText">Click to play ambient focus</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Duo: Daily Missions & Daily Brain Teaser -->
+      <section class="tv-home-dual-grid">
+        <!-- Missions Panel -->
+        <div class="tv-glass-panel">
+          <div class="tv-panel-head">
+            <div class="tv-panel-title">
+              <span>🎯</span> Today's Study Missions
+            </div>
+            <span class="tv-panel-badge">3 Available</span>
+          </div>
+
+          <div class="tv-quest-list">
+            <div class="tv-quest-item" id="quest1" onclick="completeQuest(1)">
+              <div class="tv-quest-left">
+                <div class="tv-quest-check" id="check1">✓</div>
+                <div>
+                  <div class="tv-quest-name">Snap or Solve 1 Math Question</div>
+                  <div class="tv-quest-sub">Get a clear 5-step answer</div>
+                </div>
+              </div>
+              <div class="tv-quest-reward">+50 XP 💎</div>
+            </div>
+
+            <div class="tv-quest-item" id="quest2" onclick="completeQuest(2)">
+              <div class="tv-quest-left">
+                <div class="tv-quest-check" id="check2">✓</div>
+                <div>
+                  <div class="tv-quest-name">Complete 1 Practice Lab Quiz</div>
+                  <div class="tv-quest-sub">Unlimited retries — test your knowledge</div>
+                </div>
+              </div>
+              <div class="tv-quest-reward">+40 XP 💎</div>
+            </div>
+
+            <div class="tv-quest-item" id="quest3" onclick="completeQuest(3)">
+              <div class="tv-quest-left">
+                <div class="tv-quest-check" id="check3">✓</div>
+                <div>
+                  <div class="tv-quest-name">Flip 3 Revision Flashcards</div>
+                  <div class="tv-quest-sub">Review rapid science & history facts</div>
+                </div>
+              </div>
+              <div class="tv-quest-reward">+30 XP 💎</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Brain Teaser (Interactive Widget) -->
+        <div class="tv-glass-panel">
+          <div class="tv-panel-head">
+            <div class="tv-panel-title">
+              <span>💡</span> Daily Brain Teaser
+            </div>
+            <span class="tv-panel-badge" style="background:rgba(48,209,88,0.2);color:var(--tv-accent-emerald);border-color:rgba(48,209,88,0.4);">Bonus XP</span>
+          </div>
+
+          <div class="tv-challenge-box">
+            <div class="tv-challenge-question" id="teaserQuestion">
+              If an equilateral triangle has a perimeter of 36 cm, what is the length of each side?
+            </div>
+
+            <div class="tv-challenge-opts" id="teaserOptions">
+              <button class="tv-challenge-opt-btn" onclick="checkTeaser(this, false, 'Remember: An equilateral triangle has 3 EQUAL sides! 36 ÷ 3 = ?')">
+                <span>A) 9 cm</span>
+                <span>›</span>
+              </button>
+              <button class="tv-challenge-opt-btn" onclick="checkTeaser(this, true, 'Spot on! Perimeter = 3 × side. Therefore, side = 36 ÷ 3 = 12 cm!')">
+                <span>B) 12 cm</span>
+                <span>›</span>
+              </button>
+              <button class="tv-challenge-opt-btn" onclick="checkTeaser(this, false, 'Not quite. That would give a perimeter of 48 cm.')">
+                <span>C) 16 cm</span>
+                <span>›</span>
+              </button>
+            </div>
+
+            <div class="tv-challenge-feedback" id="teaserFeedback"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fact of the Day Banner -->
+      <section class="tv-fact-banner">
+        <div style="display:flex;align-items:center;gap:18px;">
+          <div style="font-size:38px;">🔭</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--tv-accent-cyan);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Did You Know? • Class 6 Geography</div>
+            <div style="font-size:16px;font-weight:600;color:#FFF;line-height:1.4;">
+              Light travels at a speed of 300,000 km per second! Even with this speed, sunlight takes about 8 minutes to reach planet Earth.
+            </div>
+          </div>
+        </div>
+        <button class="tv-btn-primary" style="white-space:nowrap;padding:12px 22px;flex-shrink:0;" onclick="switchNav('tutor'); loadPresetQuestion('Tell me cool facts about planets and Earth')">
+          Ask Tutor More ›
+        </button>
+      </section>
+
+      <!-- Carousel 1: Continue Learning & Featured Work -->
+      <section class="tv-carousel-section">
+        <div class="tv-carousel-header">
+          <div>
+            <h2 class="tv-carousel-title">Pick Up Where You Left Off</h2>
+            <p class="tv-carousel-subtitle">Recent study topics and chapters</p>
+          </div>
+          <button class="tv-carousel-seeall" onclick="switchNav('tutor')">See All ›</button>
+        </div>
+        <div class="tv-scroller">
+          <div class="tv-card-tile wide" style="background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop&q=80')" onclick="switchNav('tutor'); loadPresetQuestion('Explain Fractions with examples')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill">Mathematics</span>
+              <h3 class="tv-tile-title">NCERT Chapter 7: Fractions</h3>
+              <p class="tv-tile-sub">Proper, improper, and mixed fractions</p>
+            </div>
+          </div>
+
+          <div class="tv-card-tile wide" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&auto=format&fit=crop&q=80')" onclick="switchNav('tutor'); loadPresetQuestion('What is Photosynthesis in Science?')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill" style="color:var(--tv-accent-emerald)">Science</span>
+              <h3 class="tv-tile-title">Plant Nutrition & Photosynthesis</h3>
+              <p class="tv-tile-sub">Chloroplasts, solar energy, glucose</p>
+            </div>
+          </div>
+
+          <div class="tv-card-tile wide" style="background-image: url('https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80')" onclick="switchNav('tutor'); loadPresetQuestion('Tell me about the Indus Valley Civilization')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill" style="color:var(--tv-accent-amber)">History</span>
+              <h3 class="tv-tile-title">The Indus Valley Civilization</h3>
+              <p class="tv-tile-sub">Harappa, Mohenjo-daro & city planning</p>
+            </div>
+          </div>
+
+          <div class="tv-card-tile wide" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80')" onclick="switchNav('tutor'); loadPresetQuestion('Explain the Solar System and planetary orbits')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill" style="color:var(--tv-accent-purple)">Geography</span>
+              <h3 class="tv-tile-title">Earth & The Solar System</h3>
+              <p class="tv-tile-sub">Rotation, revolution, seasons & axis</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Carousel 2: All School Subjects (Cinematic Cards) -->
+      <section class="tv-carousel-section">
+        <div class="tv-carousel-header">
+          <div>
+            <h2 class="tv-carousel-title">Your Subjects</h2>
+            <p class="tv-carousel-subtitle">Complete Class 6 syllabus across all streams</p>
+          </div>
+          <button class="tv-carousel-seeall" onclick="switchNav('subjects')">All Subjects ›</button>
+        </div>
+        <div class="tv-scroller" id="homeSubjectsScroller"></div>
+      </section>
+
+      <!-- Carousel 3: Quick Study Tools -->
+      <section class="tv-carousel-section">
+        <div class="tv-carousel-header">
+          <div>
+            <h2 class="tv-carousel-title">Quick Study Tools</h2>
+            <p class="tv-carousel-subtitle">Accelerate learning with interactive tools</p>
+          </div>
+        </div>
+        <div class="tv-scroller">
+          <div class="tv-card-tile" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=80')" onclick="switchNav('homework')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill">Camera Solver</span>
+              <h3 class="tv-tile-title">Homework Photo Helper</h3>
+              <p class="tv-tile-sub">Snap questions for instant answers</p>
+            </div>
+          </div>
+          <div class="tv-card-tile" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&auto=format&fit=crop&q=80')" onclick="switchNav('practice')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill" style="color:var(--tv-accent-emerald)">Interactive</span>
+              <h3 class="tv-tile-title">Practice Quiz Lab</h3>
+              <p class="tv-tile-sub">Unlimited retries without hearts</p>
+            </div>
+          </div>
+          <div class="tv-card-tile" style="background-image: url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500&auto=format&fit=crop&q=80')" onclick="switchNav('tutor'); loadPresetQuestion('Show revision flashcards')">
+            <div class="tv-tile-content">
+              <span class="tv-tile-pill" style="color:var(--tv-accent-purple)">Flashcards</span>
+              <h3 class="tv-tile-title">Revision Memory Cards</h3>
+              <p class="tv-tile-sub">Key formulas & facts</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ======================================================================
+         2. AI STUDY TUTOR VIEW (CINEMATIC CHAT WITH VISUAL INSPECTOR)
+         ====================================================================== -->
+    <main class="tv-view" id="view-tutor">
+      <div class="tv-tutor-container">
+        <!-- Visual Photo Stage -->
+        <div class="tv-visual-stage">
+          <div class="tv-stage-header">
+            <div class="tv-stage-title">
+              <span>🔍</span> Visual Photo Canvas
+            </div>
+            <button class="tv-chip" onclick="triggerPhotoUpload()">+ Attach Photo</button>
+          </div>
+          <div class="tv-stage-viewport tv-xray-viewport" id="stageViewport" onmousemove="handleXRayMove(event)" onmouseleave="hideXRayLens()">
+            <div class="tv-xray-lens" id="xrayLens">
+              <div class="tv-xray-crosshair"></div>
+              <div class="tv-xray-pill-tag" id="xrayPillTag">Magnifier</div>
+            </div>
+            <div class="tv-xray-hud-card" id="xrayHudCard">
+              <div class="tv-xray-hud-title"><span>🔍</span> Magnifier</div>
+              <div class="tv-xray-hud-val" id="xrayHudText">Move over your photo to zoom in.</div>
+            </div>
+            <div class="tv-stage-placeholder" id="stagePlaceholder">
+              <div style="font-size:42px;">📷</div>
+              <p style="font-size:14px; color:var(--tv-text-secondary); max-width:280px;">
+                Snap or drag any textbook page, worksheet diagram, or homework problem here.
+              </p>
+              <button class="tv-btn-secondary" onclick="triggerPhotoUpload()">Select Image</button>
+            </div>
+            <img id="activePhoto" src="" style="display:none;" alt="Uploaded Textbook View">
+          </div>
+          <div class="tv-stage-toolbar">
+            <div style="display:flex;gap:6px;">
+              <button class="tv-chip" onclick="zoomImage(1.2)">+ Zoom</button>
+              <button class="tv-chip" onclick="zoomImage(0.8)">- Zoom</button>
+              <button class="tv-chip" onclick="resetZoom()">Reset</button>
+            </div>
+            <span style="font-size:11px;color:var(--tv-text-muted);" id="activeSubjectLabel">Active: Mathematics</span>
+          </div>
+        </div>
+
+        <!-- Chat Stream Studio -->
+        <div class="tv-chat-stage">
+          <div class="tv-chat-header">
+            <div class="tv-tutor-persona">
+              <div class="tv-persona-avatar">🦉</div>
+              <div>
+                <div class="tv-persona-name">Snap Study AI Tutor</div>
+                <div class="tv-persona-sub">Class 6 Expert • 100% Free • Unlimited Retries</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="tv-chip tv-session-chip" id="sessionChip" onclick="openSubjectPicker()" title="Change subject">Mathematics</button>
+              <button class="tv-chip" onclick="clearChat()">Clear Chat</button>
+            </div>
+          </div>
+
+          <div class="tv-chat-stream" id="chatStream">
+            <!-- Messages injected dynamically -->
+          </div>
+
+          <!-- Chat Dock -->
+          <div class="tv-chat-dock">
+            <div class="tv-tray" id="trayPreview"></div>
+            <div class="tv-input-row">
+              <label class="tv-attach-btn" title="Upload textbook photo">
+                📷
+                <input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleFilePicked(event)">
+              </label>
+              <input type="text" id="chatInput" class="tv-input-field" placeholder="Ask anything in Mathematics, Science, or snap a textbook page..." onkeydown="handleKey(event)">
+              <button class="tv-send-btn" onclick="submitMessage()">Ask Tutor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ======================================================================
+         3. SUBJECTS VIEW
+         ====================================================================== -->
+    <main class="tv-view" id="view-subjects">
+      <div style="margin-bottom:32px;">
+        <h1 style="font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;">Class 6 Subjects</h1>
+        <p style="color:var(--tv-text-secondary);font-size:16px;">Select a subject to explore textbook chapters, questions, and revision notes</p>
+      </div>
+      <div class="tv-subject-grid" id="subjectsGallery"></div>
+    </main>
+
+    <!-- ======================================================================
+         4. HOMEWORK HELPER VIEW
+         ====================================================================== -->
+    <main class="tv-view" id="view-homework">
+      <div style="margin-bottom:32px;">
+        <h1 style="font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;">Homework Photo Solver</h1>
+        <p style="color:var(--tv-text-secondary);font-size:16px;">Snap any textbook exercise or question to get clear step-by-step answers</p>
+      </div>
+      <div style="background:var(--tv-surface-1);border:1px solid var(--tv-glass-border);border-radius:24px;padding:48px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;max-width:760px;margin:0 auto;">
+        <div style="width:72px;height:72px;border-radius:20px;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.3);display:grid;place-items:center;font-size:32px;">
+          📸
+        </div>
+        <h2 style="font-family:var(--font-display);font-size:26px;font-weight:700;">Drop your homework page here</h2>
+        <p style="color:var(--tv-text-secondary);max-width:480px;font-size:15px;">
+          Supports handwritten math problems, NCERT exercise questions, diagrams, and fill-in-the-blanks.
+        </p>
+        <button class="tv-btn-primary" onclick="triggerPhotoUpload()">Select Photo from Computer</button>
+      </div>
+    </main>
+
+    <!-- ======================================================================
+         5. PRACTICE LAB VIEW
+         ====================================================================== -->
+    <main class="tv-view" id="view-practice">
+      <div style="margin-bottom:32px;">
+        <h1 style="font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;">Practice Quiz Lab</h1>
+        <p style="color:var(--tv-text-secondary);font-size:16px;">Test your knowledge with unlimited retries and instant explanations</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+        <!-- Interactive Quiz Box -->
+        <div style="background:var(--tv-surface-1);border:1px solid var(--tv-glass-border);border-radius:24px;padding:32px;">
+          <h2 style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px;color:var(--tv-accent-cyan);">
+            🏆 Interactive Question
+          </h2>
+          <p id="practiceQText" style="font-size:16px;line-height:1.6;margin-bottom:20px;font-weight:600;">
+            In Class 6 Mathematics: If you have 3/8 of a pizza and your friend gives you 2/8 more, how much pizza do you have in total?
+          </p>
+          <div id="practiceOptions">
+            <button class="tv-quiz-btn" onclick="handleQuizPick(this, false, 'Keep the denominator the same when adding fractions with identical denominators!')">A) 5/16</button>
+            <button class="tv-quiz-btn" onclick="handleQuizPick(this, true, 'Spot on! (3 + 2)/8 = 5/8 of the pizza.')">B) 5/8</button>
+            <button class="tv-quiz-btn" onclick="handleQuizPick(this, false, 'You received more pizza, so add 3 + 2 instead of subtracting.')">C) 1/8</button>
+            <button class="tv-quiz-btn" onclick="handleQuizPick(this, false, 'Check your addition: 3 + 2 = 5, not 6.')">D) 6/8</button>
+          </div>
+          <div id="practiceFeedback" style="margin-top:14px;font-size:14px;line-height:1.6;"></div>
+        </div>
+
+        <!-- Flashcard Box -->
+        <div style="background:var(--tv-surface-1);border:1px solid var(--tv-glass-border);border-radius:24px;padding:32px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:20px;font-weight:700;margin-bottom:16px;color:var(--tv-accent-amber);">
+              ⚡ Revision Flashcard
+            </h2>
+            <div class="tv-flashcard" id="activeFlashcard" onclick="flipActiveCard()">
+              <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--tv-text-muted);margin-bottom:8px;" id="fcPrompt">
+                ❓ Question (Click to flip):
+              </div>
+              <div style="font-size:18px;font-weight:700;" id="fcText">
+                What is a Proper Fraction?
+              </div>
+            </div>
+          </div>
+          <button class="tv-btn-secondary" style="margin-top:16px;" onclick="nextFlashcard()">Next Card ›</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ======================================================================
+         6. PROFILE VIEW
+         ====================================================================== -->
+    <main class="tv-view" id="view-profile">
+      <div style="margin-bottom:32px;">
+        <h1 style="font-family:var(--font-display);font-size:36px;font-weight:800;letter-spacing:-0.03em;">Scholar Profile</h1>
+        <p style="color:var(--tv-text-secondary);font-size:16px;">Track your study streak, earned gems, and curriculum progress</p>
+      </div>
+
+      <div class="tv-profile-grid">
+        <div class="tv-profile-card">
+          <div class="tv-avatar-large">🎓</div>
+          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;">Class 6 Scholar</h2>
+          <span class="tv-Cinematic-badge" style="background:rgba(48,209,88,0.15);color:var(--tv-accent-emerald);font-size:12px;padding:4px 12px;">Level 1 • Unlimited Free Access</span>
+          <div style="width:100%;text-align:left;margin-top:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+              <span>XP Progress</span> <strong id="xpPercent">0%</strong>
+            </div>
+            <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;">
+              <div id="profileXpBar" style="height:100%;width:0%;background:linear-gradient(90deg, var(--tv-accent-blue), var(--tv-accent-cyan));"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--tv-surface-1);border:1px solid var(--tv-glass-border);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:20px;">
+          <h3 style="font-family:var(--font-display);font-size:20px;font-weight:700;">Study Preferences</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            <div>
+              <label style="font-size:12px;font-weight:700;color:var(--tv-text-muted);display:block;margin-bottom:8px;">Curriculum / Board</label>
+              <select style="width:100%;height:44px;background:rgba(0,0,0,0.5);border:1px solid var(--tv-glass-border);color:#FFF;border-radius:12px;padding:0 14px;font-size:14px;">
+                <option selected>CBSE (NCERT)</option>
+                <option>ICSE</option>
+                <option>Maharashtra State Board</option>
+                <option>Other State Board</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:700;color:var(--tv-text-muted);display:block;margin-bottom:8px;">Explanation Language</label>
+              <select style="width:100%;height:44px;background:rgba(0,0,0,0.5);border:1px solid var(--tv-glass-border);color:#FFF;border-radius:12px;padding:0 14px;font-size:14px;">
+                <option selected>English</option>
+                <option>Hindi (हिंदी)</option>
+                <option>Marathi (मराठी)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:18px;background:rgba(255,255,255,0.03);border-radius:16px;border:1px solid var(--tv-glass-border);">
+            <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;">✨ 100% Free Guarantee</h4>
+            <p style="font-size:13px;color:var(--tv-text-secondary);line-height:1.5;">
+              No credit card, no daily energy hearts, and no paid limits. Practice every problem as many times as you like.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+  <!-- Page identification overlay -->
+  <div class="id-overlay" id="idOverlay" role="dialog" aria-modal="true" aria-labelledby="idTitle">
+    <div class="id-backdrop" id="idBackdrop"></div>
+    <div class="id-shade"></div>
+    <div class="id-stage" id="idStage"></div>
+  </div>
+
+  <!-- Hidden Photo Picker -->
+  <input type="file" id="masterPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleFilePicked(event)">
+
+  <script>
+    "use strict";
+
+    /* ==========================================================================
+       DATA & APPLICATION STATE
+       ========================================================================== */
+        const SUBJECTS = [
+      {
+        id: "math",
+        name: "Mathematics",
+        icon: "📐",
+        theme: "radial-gradient(circle at 50% 0%, rgba(10,132,255,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1000&auto=format&fit=crop&q=80",
+        desc: "Fractions, Decimals, Algebra, Integers, Mensuration & Geometry",
+        chapters: [
+          { title: "Knowing Our Numbers", desc: "Large numbers, Roman numerals & place values", query: "Explain Knowing Our Numbers and large place values" },
+          { title: "Fractions & Shaded Parts", desc: "Proper, improper, mixed fractions & shaded regions", query: "Explain Fractions with shaded diagrams and examples" },
+          { title: "Decimals", desc: "Tenths, hundredths, money & length conversions", query: "Solve Class 6 Decimals word problem with 5-step method" },
+          { title: "Integers & Number Line", desc: "Positive and negative numbers with real-world examples", query: "Explain Integers and addition on a number line" },
+          { title: "Mensuration (Perimeter & Area)", desc: "Perimeter of rectangles, squares & regular polygons", query: "How to calculate Perimeter and Area of rectangle and square" }
+        ]
+      },
+      {
+        id: "science",
+        name: "Science",
+        icon: "🔬",
+        theme: "radial-gradient(circle at 50% 0%, rgba(48,209,88,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1000&auto=format&fit=crop&q=80",
+        desc: "Food Nutrition, Getting to Know Plants, Body Movements & Light",
+        chapters: [
+          { title: "Components of Food", desc: "Nutrients, balanced diet, carbohydrates, vitamins", query: "Explain Components of Food: vitamins, minerals, and balanced diet" },
+          { title: "Getting to Know Plants", desc: "Herbs, shrubs, trees, leaf venation & photosynthesis", query: "What is Photosynthesis and plant structure in Science?" },
+          { title: "Body Movements", desc: "Ball and socket joints, pivotal joints & human skeleton", query: "Explain different joints in the human body with examples" },
+          { title: "Light, Shadows & Reflections", desc: "Transparent, translucent, opaque objects & pinhole camera", query: "Explain Light, Shadows, and Pinhole camera" },
+          { title: "Separation of Substances", desc: "Winnowing, sieving, filtration & decantation", query: "Explain methods of separating substances" }
+        ]
+      },
+      {
+        id: "history",
+        name: "History",
+        icon: "🏛️",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,214,10,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=1000&auto=format&fit=crop&q=80",
+        desc: "Earliest Cities, Kingdoms, Ashoka, Vedic Age & Buildings",
+        chapters: [
+          { title: "In the Earliest Cities", desc: "Harappa, Mohenjo-daro, The Great Bath & city layout", query: "Tell me about the Indus Valley Civilization and Great Bath" },
+          { title: "From Hunting-Gathering to Growing Food", desc: "Bhimbetka cave art, Mehrgarh & Neolithic tools", query: "Explain early humans and Mehrgarh agriculture" },
+          { title: "Kingdoms, Kings & Early Republic", desc: "Mahajanapadas, Magadha empire & early taxes", query: "Explain Mahajanapadas and the rise of Magadha" },
+          { title: "Ashoka, The Emperor Who Gave Up War", desc: "Kalinga War, Dhamma edicts & lion capital pillar", query: "Tell me about Ashoka's Dhamma and the Kalinga War" }
+        ]
+      },
+      {
+        id: "geography",
+        name: "Geography",
+        icon: "🌍",
+        theme: "radial-gradient(circle at 50% 0%, rgba(100,210,255,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1000&auto=format&fit=crop&q=80",
+        desc: "Solar System, Latitudes & Longitudes, Earth Motions & Maps",
+        chapters: [
+          { title: "The Earth in the Solar System", desc: "Planets, celestial bodies, constellations & asteroid belt", query: "Explain the Solar System, planets, and constellations" },
+          { title: "Globe: Latitudes and Longitudes", desc: "Equator, Prime Meridian, Tropics & Indian Standard Time", query: "Explain Latitudes and Longitudes with diagrams" },
+          { title: "Motions of the Earth", desc: "Rotation (day/night) and Revolution (seasons cycle)", query: "Explain Rotation vs Revolution and why seasons occur" },
+          { title: "Major Domains of the Earth", desc: "Lithosphere, Hydrosphere, Atmosphere & Biosphere", query: "Explain the four major domains of Earth" }
+        ]
+      },
+      {
+        id: "english",
+        name: "English",
+        icon: "📖",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,69,58,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=1000&auto=format&fit=crop&q=80",
+        desc: "Honeysuckle prose, poems, grammar rules & paragraph writing",
+        chapters: [
+          { title: "Who Did Patrick's Homework?", desc: "Patrick, the elf, and learning self-reliance", query: "Provide chapter summary and Q&A for Who Did Patrick's Homework?" },
+          { title: "How the Dog Found Himself a Master", desc: "Journey of dog choosing man as loyal companion", query: "Explain How the Dog Found Himself a Master with moral" },
+          { title: "Taro's Reward", desc: "Story of a thoughtful and obedient woodcutter son", query: "Give questions and answers for Taro's Reward" },
+          { title: "English Grammar: Nouns & Pronouns", desc: "Types of nouns, personal pronouns & subject-verb agreement", query: "Explain Class 6 English grammar: Nouns and Pronouns with rules" }
+        ]
+      },
+      {
+        id: "computer",
+        name: "Computer Science",
+        icon: "💻",
+        theme: "radial-gradient(circle at 50% 0%, rgba(191,90,242,0.3) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1000&auto=format&fit=crop&q=80",
+        desc: "Computer Hardware, Binary Basics, Scratch Coding & Internet Safety",
+        chapters: [
+          { title: "Fundamentals of Computers", desc: "CPU, RAM, input/output devices & storage memory", query: "Explain computer hardware: CPU, RAM, and input/output units" },
+          { title: "Introduction to Scratch Coding", desc: "Sprites, blocks, motion scripts & interactive loops", query: "Explain Scratch visual programming for beginners" },
+          { title: "Algorithms and Flowcharts", desc: "Step-by-step logic, diamond decision boxes & flow lines", query: "How to draw a flowchart and write an algorithm for Class 6" },
+          { title: "Internet Ethics & Cybersecurity", desc: "Safe browsing, strong passwords & digital footprints", query: "Explain internet safety rules for school students" }
+        ]
+      },
+      {
+        id: "civics",
+        name: "Civics",
+        icon: "⚖️",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,214,10,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=1000&auto=format&fit=crop&q=80",
+        desc: "Diversity, Government, Local Self-Government & Rights in India",
+        chapters: [
+          { title: "Understanding Diversity", desc: "Many languages, faiths and customs, one country", query: "Explain Understanding Diversity in India for Class 6" },
+          { title: "What is Government?", desc: "Levels of government and how decisions are made", query: "Explain what a government is and its levels for Class 6" },
+          { title: "Panchayati Raj", desc: "Gram Sabha, Gram Panchayat and village self-government", query: "Explain Panchayati Raj and the Gram Panchayat" }
+        ]
+      },
+      {
+        id: "hindi",
+        name: "Hindi",
+        icon: "अ",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,69,58,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1000&auto=format&fit=crop&q=80",
+        desc: "Vasant: poems, stories, vyakaran and patra lekhan",
+        chapters: [
+          { title: "Sangya, Sarvanam, Visheshan", desc: "Naming words, pronouns and describing words", query: "Explain Hindi vyakaran: sangya, sarvanam and visheshan" },
+          { title: "Patra Lekhan", desc: "How to write a letter in Hindi", query: "Explain how to write a formal and informal letter in Hindi" }
+        ]
+      },
+      {
+        id: "marathi",
+        name: "Marathi",
+        icon: "अ",
+        theme: "radial-gradient(circle at 50% 0%, rgba(255,159,10,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1000&auto=format&fit=crop&q=80",
+        desc: "Marathi grammar, reading passages and essay writing",
+        chapters: [
+          { title: "Naam, Sarvanaam, Visheshan", desc: "Parts of speech in Marathi", query: "Explain Marathi grammar: naam, sarvanaam and visheshan" },
+          { title: "Nibandh Lekhan", desc: "Writing a short essay in Marathi", query: "How to write a short essay in Marathi" }
+        ]
+      },
+      {
+        id: "gk",
+        name: "General Knowledge",
+        icon: "🌍",
+        theme: "radial-gradient(circle at 50% 0%, rgba(100,210,255,0.25) 0%, rgba(5,7,11,0.98) 75%)",
+        bg: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1000&auto=format&fit=crop&q=80",
+        desc: "India, the world, famous people, sports and current facts",
+        chapters: [
+          { title: "India at a Glance", desc: "Capitals, rivers, national symbols and states", query: "Tell me key general knowledge facts about India for Class 6" },
+          { title: "Famous People & Inventions", desc: "Scientists, leaders and the things they gave the world", query: "Tell me about famous inventors and scientists for Class 6" }
+        ]
+      }
+    ];
+
+    let currentSubject = SUBJECTS[0];
+    let trayFiles = [];
+    let currentZoom = 1.0;
+
+    // Gamification State
+    let userXp = parseInt(localStorage.getItem("snapstudy_xp_v2") || "0", 10);
+    let userStreak = parseInt(localStorage.getItem("snapstudy_streak") || "1", 10);
+    let userGems = parseInt(localStorage.getItem("snapstudy_gems") || "50", 10);
+
+    // Flashcard Bank
+    const FLASHCARDS = [
+      { q: "What is a Proper Fraction?", a: "A fraction where the numerator is smaller than denominator, like 3/5." },
+      { q: "What is the function of Chlorophyll in leaves?", a: "It absorbs sunlight to carry out photosynthesis." },
+      { q: "Who discovered Harappa in the Indus Valley in 1921?", a: "Daya Ram Sahni." },
+      { q: "What is the Perimeter formula for a rectangle?", a: "Perimeter = 2 × (Length + Breadth)" },
+      { q: "What is the 0° longitude line called?", a: "The Prime Meridian, passing through Greenwich, London." }
+    ];
+    let activeCardIndex = 0;
+    let isFlipped = false;
+
+    /* ==========================================================================
+       NAVIGATION & VIEW SWITCHING
+       ========================================================================== */
+    function switchNav(navId) {
+      document.querySelectorAll(".tv-nav-tab").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.nav === navId);
+      });
+      document.querySelectorAll(".tv-view").forEach(view => {
+        view.classList.toggle("active", view.id === "view-" + navId);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function triggerPhotoUpload() {
+      document.getElementById("masterPhotoInput").click();
+    }
+
+    function updateGamificationUI() {
+      document.getElementById("streakNav").textContent = `${userStreak} Day Streak`;
+      document.getElementById("xpNav").textContent = `${userXp} XP`;
+      document.getElementById("gemsNav").textContent = `${userGems} Gems`;
+
+      const homeStreak = document.getElementById("homeStreakNum");
+      if (homeStreak) homeStreak.textContent = `${userStreak} Day`;
+      const homeXp = document.getElementById("homeXpNum");
+      if (homeXp) homeXp.textContent = `${userXp} XP`;
+
+      const pct = Math.min(((userXp % 100) / 100) * 100, 100);
+      const xpBar = document.getElementById("profileXpBar");
+      if (xpBar) xpBar.style.width = pct + "%";
+      const xpPct = document.getElementById("xpPercent");
+      if (xpPct) xpPct.textContent = Math.round(pct) + "%";
+    }
+
+    /* ==========================================================================
+       RENDER CAROUSELS & SUBJECT POSTERS
+       ========================================================================== */
+    function renderCarousels() {
+      const homeScroller = document.getElementById("homeSubjectsScroller");
+      const gallery = document.getElementById("subjectsGallery");
+      if (!homeScroller || !gallery) return;
+
+      homeScroller.innerHTML = "";
+      gallery.innerHTML = "";
+
+      SUBJECTS.forEach(sub => {
+        // Horizontal Home Tile
+        const tile = document.createElement("div");
+        tile.className = "tv-card-tile";
+        tile.style.backgroundImage = `url('${sub.bg}')`;
+        tile.onclick = () => openChapterModal(sub.id);
+        tile.innerHTML = `
+          <div class="tv-tile-content">
+            <span class="tv-tile-pill">${sub.name}</span>
+            <h3 class="tv-tile-title">${sub.icon} ${sub.name}</h3>
+            <p class="tv-tile-sub">${sub.chapters[0].title}</p>
+          </div>
+        `;
+        homeScroller.appendChild(tile);
+
+        // Subject Gallery Poster
+        const poster = document.createElement("div");
+        poster.className = "tv-subject-poster";
+        poster.style.backgroundImage = `url('${sub.bg}')`;
+        poster.onclick = () => openChapterModal(sub.id);
+        poster.innerHTML = `
+          <div class="tv-subject-content">
+            <div class="tv-subject-icon">${sub.icon}</div>
+            <h3 class="tv-subject-title">${sub.name}</h3>
+            <p class="tv-subject-desc">${sub.desc}</p>
+            <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+              ${sub.chapters.slice(0, 3).map(c => `<span style="font-size:11px;background:rgba(255,255,255,0.12);padding:3px 9px;border-radius:6px;color:#FFF;">${c.title}</span>`).join("")}
+            </div>
+          </div>
+        `;
+        gallery.appendChild(poster);
+      });
+    }
+
+    function applySubject(sub) {
+      currentSubject = sub;
+      document.getElementById("ambientBackdrop").style.background = sub.theme;
+      document.getElementById("activeSubjectLabel").textContent = "Active: " + sub.name;
+      document.getElementById("chatInput").placeholder = `Ask anything in ${sub.name} or snap a textbook photo...`;
+      updateSessionChip();
+    }
+
+    function selectSubjectAndLearn(sub) {
+      // Picking a subject from the library starts a clean session
+      if (sub.id !== session.subjectId) { session = { subjectId: sub.id, topic: "", confirmed: false }; }
+      applySubject(sub);
+      switchNav("tutor");
+    }
+
+    /* ==========================================================================
+       FILE HANDLING & VISUAL CANVAS
+       ========================================================================== */
+    /* ==========================================================================
+       PAGE IDENTIFICATION
+       The subject comes from the photo itself, read by the local AI server
+       (Ollama through /api/chat). If that server is not running we say so and
+       let the student pick, we never invent a result.
+       ========================================================================== */
+    let session = { subjectId: null, topic: "", confirmed: false };
+    let idState = null;      // { mode, item, sub, topic, note, hadSession }
+    let idAbort = null;
+    let lastPhotoText = "";
+
+    const escHtml = (t) => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    function prepImage(file) {
+      return new Promise((resolve, reject) => {
+        if (!file.type.startsWith("image/")) return reject(new Error("not an image"));
+        const url = URL.createObjectURL(file);
+        const im = new Image();
+        im.onload = () => {
+          const k = Math.min(1, 1280 / Math.max(im.naturalWidth, im.naturalHeight));
+          const c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round(im.naturalWidth * k));
+          c.height = Math.max(1, Math.round(im.naturalHeight * k));
+          const g = c.getContext("2d");
+          g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+          g.drawImage(im, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          resolve(c.toDataURL("image/jpeg", 0.85));
+        };
+        im.onerror = () => { URL.revokeObjectURL(url); reject(new Error("unreadable")); };
+        im.src = url;
+      });
+    }
+
+    async function handleFilePicked(e) {
+      const files = Array.from(e.target.files || []);
+      e.target.value = "";
+      if (!files.length) return;
+      const items = [];
+      for (const f of files) {
+        try { items.push({ name: f.name, src: await prepImage(f) }); } catch (err) { /* skip unreadable */ }
+      }
+      if (!items.length) return;
+      switchNav("tutor");
+      items.forEach(it => trayFiles.push(it));
+      renderTray();
+      showInCanvas(items[0].src);
+      identifyPhoto(items[0]);
+    }
+
+    /* ==========================================================================
+       GEMINI (optional): if a key was pasted at login, photos are read by Gemini.
+       Without a key the free in-browser reader (OCR) is used.
+       ========================================================================== */
+    function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
+    async function callClaude({ system, content, max = 1024, signal }) {   // talks to Gemini
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+        method: "POST", signal,
+        headers: { "content-type": "application/json", "x-goog-api-key": getApiKey() },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: content }],
+          generationConfig: { maxOutputTokens: max, thinkingConfig: { thinkingBudget: 0 } }
+        })
+      });
+      if (!res.ok) {
+        let m = ""; try { m = (await res.json()).error.message; } catch (e) {}
+        const bad = res.status === 401 || res.status === 403 || /API key/i.test(m);
+        if (bad) try { localStorage.removeItem("snapstudy_api_key"); } catch (e) {}
+        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : (m || "Gemini couldn't answer right now.")));
+        err.status = res.status; throw err;
+      }
+      const j = await res.json();
+      const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
+      const out = parts.map(x => x.text || "").join("");
+      if (!out) throw new Error("Gemini sent back an empty answer. Please try again.");
+      return out;
+    }
+    const imgBlock = (src) => ({ inlineData: { mimeType: "image/jpeg", data: src.split(",")[1] } });
+
+    async function detectWithClaude(src, signal) {
+      const ids = SUBJECTS.map(s => s.id).join(", ");
+      const out = await callClaude({
+        signal, max: 400,
+        system: "You look at photos of Class 6 school textbook pages. Use only what you can actually see.",
+        content: [imgBlock(src), { text: `Which subject is this page? Allowed subject values: ${ids}, unknown. Give a topic of at most five words (empty if unsure). Write one or two simple sentences for an 11 year old saying what the page is about. Answer only with JSON like {"subject":"math","topic":"Multiples","about":"..."}.` }]
+      });
+      const m = out.match(/\{[\s\S]*\}/);
+      const j = m ? JSON.parse(m[0]) : {};
+      const raw = String(j.subject || "").toLowerCase().trim();
+      const hit = SUBJECTS.find(s => s.id === raw || s.name.toLowerCase() === raw);
+      const about = String(j.about || "").trim().slice(0, 280);
+      if (!hit) return { status: "unsure", about, text: about };
+      return { status: "ok", subject: hit.id, topic: String(j.topic || "").trim().slice(0, 60), about, text: about };
+    }
+
+    async function answerWithClaude(text, snaps, botMsg, time) {
+      const chatStream = document.getElementById("chatStream");
+      botMsg.innerHTML = `<div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div><div class="tv-msg-bubble">Looking at your photo…</div>`;
+      chatStream.appendChild(botMsg);
+      chatStream.scrollTop = chatStream.scrollHeight;
+      let html, ok = false;
+      try {
+        const out = await callClaude({
+          max: 1200,
+          system: `You are a friendly Class 6 (NCERT) tutor for an 11 year old student. The student is studying ${currentSubject.name}${session.topic ? " (" + session.topic + ")" : ""}. Use simple words and short steps. Answer only about what is really in the photo; if you cannot read something, say so instead of guessing.`,
+          content: [...snaps.map(i => imgBlock(i.src)), { text: text || "Please explain this page and help me with the question." }]
+        });
+        html = escHtml(out).replace(/\n/g, "<br>"); ok = true;
+      } catch (err) {
+        html = escHtml(err.message || "Something went wrong.");
+      }
+      botMsg.innerHTML = `<div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div><div class="tv-msg-bubble">${html}<div class="tv-chat-controls"><button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button></div></div>`;
+      if (ok) {
+        userXp += 25; userGems += 5;
+        localStorage.setItem("snapstudy_xp_v2", userXp); localStorage.setItem("snapstudy_gems", userGems);
+        updateGamificationUI(); updateStudentUI();
+      }
+      chatStream.scrollTop = chatStream.scrollHeight;
+    }
+
+    // Reads the real words on the photo inside the browser (Tesseract OCR, free, no server, no key),
+    // then picks the subject by the words it found. Nothing is guessed from the subject buttons.
+    const SUBJECT_WORDS = {
+      math: { words: /\b(multiples?|factors?|fractions?|numerators?|denominators?|decimals?|integers?|perimeter|area|angles?|triangles?|rectangles?|equations?|algebra|digits?|divisible|shaded|ratio|primes?|lcm|hcf|sum|numbers?|figure it out|average|symmetry|geometry)\b/gi,
+        topics: [[/multiples?/i, "Multiples"], [/factors?/i, "Factors"], [/fractions?|numerator|denominator|shaded/i, "Fractions"], [/decimals?/i, "Decimals"], [/integers?/i, "Integers"], [/perimeter|area/i, "Perimeter and Area"], [/angles?/i, "Angles"], [/primes?/i, "Prime numbers"], [/ratio/i, "Ratio"], [/symmetry/i, "Symmetry"], [/numbers?|digits?/i, "Numbers"]] },
+      science: { words: /\b(plants?|leaf|leaves|photosynthesis|food|nutrients?|vitamins?|magnets?|light|shadows?|motion|water|animals?|cells?|body|materials?|air|soil|roots?|stem|flowers?|sunlight|oxygen|energy)\b/gi,
+        topics: [[/photosynthesis|leaf|leaves|plants?/i, "Plants"], [/magnets?/i, "Magnets"], [/light|shadows?/i, "Light and shadows"], [/food|nutrients?|vitamins?/i, "Food"], [/water/i, "Water"], [/air|oxygen/i, "Air"], [/body/i, "The body"]] },
+      english: { words: /\b(nouns?|verbs?|adjectives?|poem|paragraph|grammar|sentences?|tense|story|passage|author|poet|stanza|synonyms?|antonyms?|pronouns?|adverbs?|comprehension)\b/gi,
+        topics: [[/nouns?|pronouns?/i, "Nouns and pronouns"], [/verbs?|tense/i, "Verbs and tenses"], [/adjectives?/i, "Adjectives"], [/poem|poet|stanza/i, "Poem"], [/passage|comprehension/i, "Reading passage"], [/story/i, "Story"]] },
+      history: { words: /\b(empire|kings?|ancient|harappa|harappan|indus|vedas?|kingdom|archaeolog\w*|dynasty|ashoka|inscriptions?|civili[sz]ation|mohenjo|maurya|gupta|rulers?|temples?)\b/gi,
+        topics: [[/harappa|indus|mohenjo/i, "Indus Valley"], [/vedas?/i, "The Vedas"], [/ashoka|maurya/i, "The Mauryas"], [/archaeolog/i, "Archaeology"], [/kingdom|kings?|rulers?/i, "Kings and kingdoms"]] },
+      geography: { words: /\b(earth|maps?|latitudes?|longitudes?|continents?|oceans?|globe|climate|plateau|mountains?|equator|hemisphere|rivers?|lithosphere|atmosphere|compass)\b/gi,
+        topics: [[/latitudes?|longitudes?/i, "Latitudes and longitudes"], [/maps?/i, "Maps"], [/globe|earth/i, "The Earth"], [/continents?|oceans?/i, "Continents and oceans"], [/mountains?|plateau/i, "Landforms"]] },
+      civics: { words: /\b(government|democracy|panchayat|diversity|constitution|rights|village|election|citizens?|gram sabha|municipal\w*|vote|voting)\b/gi,
+        topics: [[/panchayat|gram sabha/i, "Panchayati Raj"], [/diversity/i, "Diversity"], [/government|democracy/i, "Government"], [/election|vote|voting/i, "Elections"]] },
+      computer: { words: /\b(computers?|scratch|keyboard|internet|binary|software|hardware|algorithms?|flowcharts?|cpu|memory|mouse|password|program\w*|monitor)\b/gi,
+        topics: [[/scratch|program/i, "Coding"], [/algorithm|flowchart/i, "Algorithms"], [/internet|password/i, "Internet safety"], [/binary/i, "Binary"], [/computers?|cpu|hardware/i, "Computers"]] },
+      gk: { words: /\b(capital|national|president|prime minister|inventors?|olympics?|countries|country|famous|awards?|monuments?|currency)\b/gi,
+        topics: [[/capital/i, "Capitals"], [/inventors?/i, "Inventors"], [/olympics?/i, "Sports"], [/national/i, "National symbols"]] }
+    };
+
+    let tessLoading = null;
+    function loadTesseract() {
+      if (window.Tesseract) return Promise.resolve(window.Tesseract);
+      if (!tessLoading) tessLoading = new Promise((res, rej) => {
+        const sc = document.createElement("script");
+        sc.src = "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.0/tesseract.min.js";
+        sc.onload = () => res(window.Tesseract);
+        sc.onerror = () => { tessLoading = null; rej(new Error("load")); };
+        document.head.appendChild(sc);
+      });
+      return tessLoading;
+    }
+
+    function pickReadableLine(text, topicRe) {
+      const lines = text.split(/\n+/).map(l => l.replace(/\s+/g, " ").trim()).filter(l => l.length >= 18);
+      const clean = lines.filter(l => (l.match(/[A-Za-z0-9 ,.?'’-]/g) || []).length / l.length > 0.85 && /[a-z]{3}/i.test(l));
+      const best = (topicRe && clean.find(l => topicRe.test(l))) || clean.find(l => /\?|find|what|how|why|explain|define/i.test(l)) || clean[0];
+      return best ? best.slice(0, 150) : "";
+    }
+
+    // Returns { status: "ok"|"unsure"|"unavailable"|"aborted", subject, topic, about, text }
+    async function detectFromImage(src, signal) {
+      let worker;
+      const stop = () => { try { worker && worker.terminate(); } catch (e) {} };
+      try {
+        const T = await loadTesseract();
+        if (signal.aborted) return { status: "aborted" };
+        worker = await T.createWorker("eng");
+        signal.addEventListener("abort", stop);
+        const { data } = await worker.recognize(src);
+        await worker.terminate();
+        if (signal.aborted) return { status: "aborted" };
+        const text = (data.text || "").trim();
+        let best = null, bestScore = 0, bestTopics = null;
+        for (const id of Object.keys(SUBJECT_WORDS)) {
+          const hits = (text.match(SUBJECT_WORDS[id].words) || []).length;
+          if (hits > bestScore) { bestScore = hits; best = id; bestTopics = SUBJECT_WORDS[id].topics; }
+        }
+        // Pages full of digits (tables, sums) are Maths even with few keywords
+        const digits = (text.match(/\d/g) || []).length;
+        if (!best && text.length > 30 && digits / text.length > 0.3) { best = "math"; bestScore = 2; bestTopics = SUBJECT_WORDS.math.topics; }
+        const topicHit = best ? bestTopics.find(t => t[0].test(text)) : null;
+        const line = pickReadableLine(text, topicHit && topicHit[0]);
+        const about = line ? `Some of the writing I could read: “${line}”` : "";
+        if (!best || bestScore < 2) return { status: "unsure", about, text: line };
+        return { status: "ok", subject: best, topic: topicHit ? topicHit[1] : "", about, text: line };
+      } catch (err) {
+        stop();
+        if (signal.aborted) return { status: "aborted" };
+        return { status: "unavailable" };
+      }
+    }
+
+    async function identifyPhoto(item) {
+      if (idAbort) idAbort.abort();
+      const ctl = idAbort = new AbortController();
+      const hadSession = session.confirmed;
+      idState = { mode: "loading", item, hadSession };
+      renderIdentify();
+      let r = null;
+      if (getApiKey()) { try { r = await detectWithClaude(item.src, ctl.signal); } catch (e) { r = null; } }
+      if (!r && !ctl.signal.aborted) r = await detectFromImage(item.src, ctl.signal);
+      if (ctl.signal.aborted || idAbort !== ctl) return;
+      idAbort = null;
+      item.text = r.text || "";
+      if (r.status === "ok") {
+        const sub = SUBJECTS.find(s => s.id === r.subject);
+        if (hadSession && sub.id === session.subjectId) { closeIdentify(); return; }
+        idState = { mode: hadSession ? "mismatch" : "confirm", item, sub, topic: r.topic, about: r.about, hadSession };
+      } else if (hadSession) {
+        closeIdentify();   // can't tell: don't interrupt a study session
+        return;
+      } else {
+        idState = { mode: "select", item, sub: null, topic: "", about: r.about, hadSession,
+          note: r.status === "unsure" ? "We couldn't tell which subject this page is from." : "We couldn't load the page reader. Check your internet, or choose the subject yourself." };
+      }
+      renderIdentify();
+    }
+
+    function openSubjectPicker() {
+      idState = { mode: "select", item: trayFiles[0] || null, sub: SUBJECTS.find(s => s.id === session.subjectId) || null, topic: session.topic, hadSession: false, fromChip: true };
+      renderIdentify();
+    }
+
+    function renderIdentify() {
+      const ov = document.getElementById("idOverlay");
+      const stage = document.getElementById("idStage");
+      const st = idState;
+      const wasOpen = ov.classList.contains("open");
+      document.getElementById("idBackdrop").style.backgroundImage = st.item ? `url("${st.item.src}")` : (currentSubject.bg ? `url("${currentSubject.bg}")` : "none");
+      stage.className = "id-stage" + (st.mode === "select" ? " id-select" : "");
+      const photo = st.item ? `<div class="id-photo ${st.mode === "loading" ? "busy" : ""}"><img src="${st.item.src}" alt="Your uploaded page"><div class="id-bar"></div></div>` : "";
+      let copy = "";
+      if (st.mode === "loading") {
+        copy = `<div class="id-copy"><div class="id-eyebrow">One moment</div><h1 class="id-title" id="idTitle">Reading your page</h1><p class="id-note">The first time can take a little while.</p>
+          <div class="id-actions" style="margin-top:40px"><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else if (st.mode === "confirm") {
+        copy = `<div class="id-copy"><div class="id-eyebrow">We identified your page</div><h1 class="id-title" id="idTitle">${escHtml(st.sub.name)}</h1>
+          ${st.topic ? `<div class="id-topic">Topic: <b>${escHtml(st.topic)}</b></div>` : ""}
+          ${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}
+          <div class="id-ask">Continue with ${escHtml(st.sub.name)}?</div>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" autofocus>Continue</button><button class="id-btn" data-act="change">Change subject</button></div>
+          <div class="id-actions" style="margin-top:6px"><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else if (st.mode === "mismatch") {
+        const cur = SUBJECTS.find(s => s.id === session.subjectId) || currentSubject;
+        copy = `<div class="id-copy"><div class="id-eyebrow">This page looks different</div><h1 class="id-title" id="idTitle">${escHtml(st.sub.name)}</h1>
+          ${st.topic ? `<div class="id-topic">Topic: <b>${escHtml(st.topic)}</b></div>` : ""}
+          ${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}
+          <p class="id-note">You are studying ${escHtml(cur.name)}. Switch to ${escHtml(st.sub.name)}? Switching starts a fresh chat.</p>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" autofocus>Switch to ${escHtml(st.sub.name)}</button><button class="id-btn" data-act="stay">Stay in ${escHtml(cur.name)}</button></div>
+          <div class="id-actions" style="margin-top:6px"><button class="id-link" data-act="change">Choose another subject</button><button class="id-link" data-act="remove">Remove photo</button></div></div>`;
+      } else {
+        const picked = st.sub;
+        copy = `<div class="id-copy"><div class="id-eyebrow">${escHtml(st.note || (st.item ? "Your page" : "Study session"))}</div><h1 class="id-title" id="idTitle">Choose a subject</h1>${st.about ? `<p class="id-note">${escHtml(st.about)}</p>` : ""}</div>
+          <div class="id-shelf" id="idShelf">${SUBJECTS.map(s => `<button class="id-poster ${st.suggested === s.id ? "suggested" : ""}" data-sub="${s.id}" aria-pressed="${picked && picked.id === s.id}" style="background-image:url('${s.bg}')"><span>${escHtml(s.name)}</span></button>`).join("")}</div>
+          <div class="id-actions"><button class="id-btn primary" data-act="continue" ${picked ? "" : "disabled"}>${picked ? "Continue with " + escHtml(picked.name) : "Continue"}</button>
+          ${st.fromChip || !st.item ? `<button class="id-btn" data-act="cancel">Cancel</button>` : (st.detected ? `<button class="id-btn" data-act="back">Back</button>` : "")}
+          ${st.item ? `<button class="id-link" data-act="remove">Remove photo</button>` : ""}</div>`;
+      }
+      stage.innerHTML = st.mode === "select" ? copy : copy + photo;   // selector shows the photo through the blurred backdrop
+      ov.classList.add("open");
+      requestAnimationFrame(() => ov.classList.add("show"));
+      const sel = stage.querySelector('.id-poster[aria-pressed="true"]');
+      if (sel && !wasOpen) setTimeout(() => sel.scrollIntoView({ inline: "center", block: "nearest" }), 60);
+      const f = stage.querySelector("[autofocus]"); if (f) f.focus({ preventScroll: true });
+    }
+
+    function closeIdentify() {
+      const ov = document.getElementById("idOverlay");
+      ov.classList.remove("show");
+      setTimeout(() => { if (!ov.classList.contains("show")) ov.classList.remove("open"); }, 450);
+      idState = null;
+    }
+
+    function startSession(sub, topic, item) {
+      const fresh = !session.confirmed || session.subjectId !== sub.id;
+      if (fresh) {
+        clearChat();
+        // photos from an earlier subject don't carry over into the new session
+        trayFiles = item ? [item] : [];
+        renderTray();
+        if (item) showInCanvas(item.src);
+        else { document.getElementById("activePhoto").style.display = "none"; document.getElementById("stagePlaceholder").style.display = "flex"; }
+      }
+      session = { subjectId: sub.id, topic: topic || (fresh ? "" : session.topic), confirmed: true };
+      applySubject(sub);
+      if (fresh) {
+        const stream = document.getElementById("chatStream");
+        const note = document.createElement("div");
+        note.className = "tv-msg assistant";
+        note.innerHTML = `<div class="tv-msg-bubble">Studying <strong>${escHtml(sub.name)}</strong>${topic ? ` &middot; ${escHtml(topic)}` : ""}. Ask me anything about ${item ? "this page" : "it"}.</div>`;
+        stream.appendChild(note);
+      }
+      closeIdentify();
+    }
+
+    function updateSessionChip() {
+      const chip = document.getElementById("sessionChip");
+      if (!chip) return;
+      chip.textContent = currentSubject.name + (session.topic && session.subjectId === currentSubject.id ? " · " + session.topic : "");
+    }
+
+    function removeIdentifiedPhoto() {
+      if (idAbort) { idAbort.abort(); idAbort = null; }
+      const i = idState && idState.item ? trayFiles.indexOf(idState.item) : -1;
+      closeIdentify();
+      if (i >= 0) removeTray(i);
+    }
+
+    document.getElementById("idOverlay").addEventListener("click", (e) => {
+      const poster = e.target.closest(".id-poster");
+      if (poster && idState) {
+        idState.sub = SUBJECTS.find(s => s.id === poster.dataset.sub);
+        idState.picked = true;
+        renderIdentify();
+        return;
+      }
+      const btn = e.target.closest("[data-act]");
+      if (!btn || !idState) return;
+      const st = idState, act = btn.dataset.act;
+      if (act === "remove") return removeIdentifiedPhoto();
+      if (act === "continue") {
+        if (!st.sub) return;
+        const topic = st.picked ? "" : st.topic;
+        return startSession(st.sub, topic, st.item);
+      }
+      if (act === "stay" || act === "cancel") { return closeIdentify(); }
+      if (act === "change") {
+        idState = { mode: "select", item: st.item, sub: null, topic: "", about: st.about, hadSession: st.hadSession, detected: st, suggested: st.sub ? st.sub.id : null, note: "Choose the right subject" };
+        return renderIdentify();
+      }
+      if (act === "back" && st.detected) { idState = st.detected; return renderIdentify(); }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && idState && idState.mode !== "loading") closeIdentify();
+    });
+
+    function renderTray() {
+      const tray = document.getElementById("trayPreview");
+      tray.innerHTML = "";
+      trayFiles.forEach((f, idx) => {
+        const chip = document.createElement("div");
+        chip.className = "tv-tray-chip";
+        chip.innerHTML = `
+          <img src="${f.src}">
+          <span>${f.name}</span>
+          <span style="cursor:pointer;font-weight:bold;" onclick="removeTray(${idx})">✕</span>
+        `;
+        tray.appendChild(chip);
+      });
+    }
+
+    function removeTray(idx) {
+      trayFiles.splice(idx, 1);
+      renderTray();
+      if (trayFiles.length === 0) {
+        document.getElementById("activePhoto").style.display = "none";
+        document.getElementById("stagePlaceholder").style.display = "flex";
+      }
+    }
+
+    function showInCanvas(src) {
+      const img = document.getElementById("activePhoto");
+      img.src = src;
+      img.style.display = "block";
+      document.getElementById("stagePlaceholder").style.display = "none";
+      resetZoom();
+    }
+
+    function zoomImage(factor) {
+      currentZoom = Math.max(0.6, Math.min(3.0, currentZoom * factor));
+      document.getElementById("activePhoto").style.transform = `scale(${currentZoom})`;
+    }
+    function resetZoom() {
+      currentZoom = 1.0;
+      document.getElementById("activePhoto").style.transform = "scale(1)";
+    }
+
+    /* ==========================================================================
+       AI TUTOR CORE LOGIC (INTELLIGENT, STRUCTURED, 100% PRESERVED)
+       ========================================================================== */
+    function submitMessage() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (!text && trayFiles.length === 0) return;
+
+      const chatStream = document.getElementById("chatStream");
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // User Message
+      let snapsHtml = "";
+      if (trayFiles.length > 0) {
+        snapsHtml = '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
+          trayFiles.map(img => `<img src="${img.src}" style="height:120px;border-radius:10px;border:1px solid var(--tv-accent-cyan);" alt="snap">`).join("") +
+          '</div>';
+      }
+
+      const userMsg = document.createElement("div");
+      userMsg.className = "tv-msg user";
+      userMsg.innerHTML = `
+        <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">You • ${time}</div>
+        <div class="tv-msg-bubble">
+          ${snapsHtml}
+          <div>${text || "Please explain this textbook snapshot."}</div>
+        </div>
+      `;
+      chatStream.appendChild(userMsg);
+
+      input.value = "";
+      const currentSnaps = [...trayFiles];
+      trayFiles = [];
+      renderTray();
+      chatStream.scrollTop = chatStream.scrollHeight;
+
+      // Smart AI Tutor Answer
+      setTimeout(() => {
+        const botMsg = document.createElement("div");
+        botMsg.className = "tv-msg assistant";
+        if (getApiKey()) { answerWithClaude(text, currentSnaps, botMsg, time); return; }
+
+        lastPhotoText = currentSnaps.map(i => i.text || "").join(" ").trim();
+        const resp = generateSmartResponse(text, currentSnaps.length > 0);
+
+        if (resp.type === "chat") {
+          botMsg.innerHTML = `
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div class="tv-msg-bubble">
+              ${resp.text}
+              <div class="tv-chat-controls">
+                <button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button>
+                <button class="tv-chip" onclick="copyText(this.parentElement.parentElement.innerText)">📋 Copy</button>
+              </div>
+            </div>
+          `;
+        } else if (resp.type === "math") {
+          botMsg.innerHTML = `
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div class="tv-msg-bubble">
+              <div style="font-size:16px;font-weight:700;color:var(--tv-accent-cyan);margin-bottom:6px;">${resp.title}</div>
+              
+              <div class="tv-card-breakdown">
+                <div class="tv-card-head"><span>📐 5-Step Mathematics NCERT Method</span></div>
+                <div class="tv-card-body">
+                  <p><strong>1. Given:</strong> ${resp.given}</p>
+                  <p><strong>2. To Find:</strong> ${resp.toFind}</p>
+                  <p><strong>3. Formula:</strong> <code>${resp.formula}</code></p>
+                  <div style="margin:8px 0;">
+                    <strong>4. Step-by-Step Working:</strong>
+                    <ul style="margin:4px 0 6px 18px;line-height:24px;">
+                      ${resp.steps.map(s => `<li>${s}</li>`).join("")}
+                    </ul>
+                  </div>
+                  <div style="background:rgba(48,209,88,0.15);border:1px solid rgba(48,209,88,0.3);color:var(--tv-accent-emerald);font-weight:700;padding:8px 12px;border-radius:8px;">
+                    5. Final Verified Answer: ${resp.finalAnswer}
+                  </div>
+                </div>
+              </div>
+
+              <div class="tv-analogy-box">
+                💡 <strong>Everyday Life Analogy:</strong> ${resp.analogy}
+              </div>
+
+              <div class="tv-chat-controls">
+                <button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button>
+                <button class="tv-chip" onclick="copyText(this.parentElement.parentElement.innerText)">📋 Copy</button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Science / Lesson
+          botMsg.innerHTML = `
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div class="tv-msg-bubble">
+              <div style="font-size:16px;font-weight:700;color:var(--tv-accent-cyan);margin-bottom:6px;">${resp.title}</div>
+              <p>${resp.summary}</p>
+              <ul style="margin:10px 0 12px 18px;line-height:24px;">
+                ${resp.bullets.map(b => `<li>${b}</li>`).join("")}
+              </ul>
+
+              <div class="tv-analogy-box">
+                💡 <strong>Everyday Example:</strong> ${resp.analogy}
+              </div>
+
+              <div class="tv-chat-controls">
+                <button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button>
+                <button class="tv-chip" onclick="copyText(this.parentElement.parentElement.innerText)">📋 Copy</button>
+              </div>
+            </div>
+          `;
+        }
+
+        chatStream.appendChild(botMsg);
+        if (!resp.noXp) {
+          userXp += 25;
+          userGems += 5;
+          localStorage.setItem("snapstudy_xp_v2", userXp);
+          localStorage.setItem("snapstudy_gems", userGems);
+        }
+        updateGamificationUI();
+      updateStudentUI();
+        chatStream.scrollTop = chatStream.scrollHeight;
+      }, 550);
+    }
+
+    function generateSmartResponse(rawQuery, hasImages) {
+      const q = (rawQuery || "").toLowerCase().trim();
+
+      // A photo is attached: this page has no AI reader, so never answer as if we read it.
+      if (hasImages) {
+        return {
+          type: "chat",
+          noXp: true,
+          text: lastPhotoText
+            ? `Here is some of the writing I could read on your photo:<br><em>&ldquo;${escHtml(lastPhotoText.slice(0, 220))}&rdquo;</em><br><br>
+               I can't fully understand pictures yet. Type the exact question you want help with and I'll explain it.`
+            : `I couldn't read any writing on your photo, so I don't know what is on your page.<br><br>
+               Type the question from the page here and I'll explain it.`
+        };
+      }
+
+      // Greetings
+      if (/^(hi|hello|hey|good morning|namaste)/i.test(q)) {
+        return {
+          type: "chat",
+          text: `Hello there! 😊 Ready to conquer your Class 6 study goals in <strong>${currentSubject.name}</strong>?<br><br>
+                 You can ask me any math word problem, upload a textbook snapshot, or ask for step-by-step help.`
+        };
+      }
+
+      // Fractions
+      if (q.includes("fraction") || q.includes("denominator") || q.includes("numerator") || q.includes("shaded")) {
+        return {
+          type: "math",
+          title: "Class 6 Mathematics: Fractions & Shaded Parts",
+          given: "Total parts and shaded/selected fractional regions from textbook problem.",
+          toFind: "Fraction representation, simplified form, and step-by-step calculation.",
+          formula: "Fraction = (Shaded or selected parts) / (Total equal parts)",
+          steps: [
+            "Step 1: Count the total number of equal divisions in the whole unit (Denominator).",
+            "Step 2: Count the exact number of shaded or selected units (Numerator).",
+            "Step 3: Write as Numerator / Denominator.",
+            "Step 4: Check if both numbers share a common factor to reduce to simplest form."
+          ],
+          finalAnswer: "Shaded parts ÷ Total equal parts, written in simplest form.",
+          notebook: "Question: Find the fraction of shaded portions.\nAnswer:\n1. Total equal parts in figure = 8.\n2. Shaded parts = 3.\n3. Fraction of shaded part = 3/8. Ans.",
+          analogy: "Like dividing an 8-slice birthday pizza: if you eat 3 slices, you ate exactly 3/8 of the whole pizza!"
+        };
+      }
+
+      // Photosynthesis
+      if (q.includes("photosynthesis") || q.includes("plant")) {
+        return {
+          type: "science",
+          title: "Class 6 Science: Photosynthesis",
+          summary: "Photosynthesis is the process by which green leaves prepare food for the plant using sunlight.",
+          bullets: [
+            "<strong>Raw Materials:</strong> Sunlight, Water (from soil), Carbon Dioxide (from air), and Chlorophyll.",
+            "<strong>Products:</strong> Glucose (stored plant food) and Oxygen (released for us to breathe).",
+            "<strong>Reaction:</strong> Carbon Dioxide + Water + Sunlight ➔ Glucose + Oxygen."
+          ],
+          notebook: "Question: Define Photosynthesis.\nAnswer:\nPhotosynthesis is the biological process by which green leaves prepare food for the plant in the presence of sunlight and chlorophyll using water and carbon dioxide.\nOxygen is released as a byproduct. Ans.",
+          analogy: "Leaves are like tiny green chef kitchens: sunlight is their stove, soil water is the ingredient, and they cook healthy food for the tree."
+        };
+      }
+
+      // History Indus
+      if (q.includes("indus") || q.includes("harappa") || q.includes("bath")) {
+        return {
+          type: "history",
+          title: "Class 6 History: The Indus Valley Civilization",
+          summary: "One of the world's most advanced ancient urban civilizations, dating back over 4,700 years ago.",
+          bullets: [
+            "<strong>City Planning:</strong> Divided into the Citadel (higher) and Lower Town.",
+            "<strong>The Great Bath:</strong> A special brick tank in Mohenjo-daro lined with natural tar.",
+            "<strong>Covered Drainage:</strong> Streets laid out in clean grids with inspection holes."
+          ],
+          notebook: "Key Features of Harappan Cities:\n1. Straight grid-pattern roads intersecting at right angles.\n2. Advanced covered drainage system with inspection traps.\n3. Discovery of the Great Bath at Mohenjo-daro. Ans.",
+          analogy: "Harappan engineers planned clean cities with covered drains thousands of years before modern towns!"
+        };
+      }
+
+      // Plain arithmetic: really calculate it
+      const arith = q.replace(/what is|calculate|solve|=|\?/g, "").replace(/[x×]/g, "*").replace(/÷/g, "/").trim();
+      if (/^[0-9+\-*\/().\s]+$/.test(arith) && /[0-9]\s*[+\-*\/]\s*[0-9(]/.test(arith)) {
+        try {
+          const val = Function('"use strict"; return (' + arith + ')')();
+          if (Number.isFinite(val)) return { type: "chat", text: `<strong>${escHtml(arith.replace(/\*/g, "×").replace(/\//g, "÷"))} = ${Math.round(val * 1e6) / 1e6}</strong>` };
+        } catch (e) { /* fall through */ }
+      }
+
+      // Anything else: be honest instead of giving a made-up answer
+      return {
+        type: "chat",
+        noXp: true,
+        text: `I don't know that one yet. Without a Gemini key I can only explain a few topics (fractions, photosynthesis, the Indus Valley) and do simple sums.<br><br>
+               To ask me anything in <strong>${escHtml(currentSubject.name)}</strong>, add a Gemini key when you sign in (the box under your name).`
+      };
+    }
+
+    function loadPresetQuestion(q) {
+      document.getElementById("chatInput").value = q;
+      submitMessage();
+    }
+
+    function clearChat() {
+      const stream = document.getElementById("chatStream");
+      stream.innerHTML = `
+        <div class="tv-msg assistant">
+          <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • Just now</div>
+          <div class="tv-msg-bubble">
+            👋 <strong>Welcome to Snap Study!</strong><br>
+            What would you like to explore today? Snap a photo or ask a question in any Class 6 subject.
+            <div class="tv-chat-controls">
+              <button class="tv-chip" onclick="loadPresetQuestion('Explain Fractions with examples')">📐 Explain Fractions</button>
+              <button class="tv-chip" onclick="loadPresetQuestion('What is Photosynthesis in Science?')">🌿 Photosynthesis</button>
+              <button class="tv-chip" onclick="loadPresetQuestion('Tell me about the Indus Valley Civilization')">🏛️ Indus Valley</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleKey(e) {
+      if (e.key === "Enter") submitMessage();
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt);
+      alert("Copied to clipboard!");
+    }
+
+    function speakText(txt) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const clean = txt.replace(/[*_#]/g, '');
+        const utt = new SpeechSynthesisUtterance(clean);
+        utt.rate = 0.95;
+        window.speechSynthesis.speak(utt);
+      }
+    }
+
+            /* ==========================================================================
+       Cinematic CINEMATIC HERO BILLBOARD CAROUSEL & 3D FOCUS PARALLAX
+       ========================================================================== */
+    const HERO_SLIDES = [
+      {
+        bg: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1600&auto=format&fit=crop&q=80",
+        tag: "✨ Featured Spotlight • Class 6 Mathematics",
+        title: "Mastering Fractions & Ratios",
+        desc: "Snap your textbook page or ask the tutor to break down complex word problems with step-by-step solutions.",
+        preset: "Explain Fractions with examples"
+      },
+      {
+        bg: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1600&auto=format&fit=crop&q=80",
+        tag: "🔬 Live Discovery • Class 6 Science",
+        title: "Photosynthesis & Plant Life",
+        desc: "Explore chlorophyll, leaf structures, and how plants turn solar energy into food with crystal-clear NCERT diagrams.",
+        preset: "What is Photosynthesis in Science?"
+      },
+      {
+        bg: "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=1600&auto=format&fit=crop&q=80",
+        tag: "🏛️ Ancient Expeditions • Class 6 History",
+        title: "The Indus Valley Civilization",
+        desc: "Uncover Mohenjo-daro, the Great Bath, and sophisticated 4,700-year-old urban engineering and drainage systems.",
+        preset: "Tell me about the Indus Valley Civilization"
+      },
+      {
+        bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop&q=80",
+        tag: "🌍 Cosmic Wonders • Class 6 Geography",
+        title: "The Earth & Our Solar System",
+        desc: "Understand planetary orbits, solar eclipses, and why seasons change with interactive visual walkthroughs.",
+        preset: "Explain the Solar System and planetary orbits"
+      }
+    ];
+
+    let currentHeroSlide = 0;
+    let heroInterval = null;
+
+    function setHeroSlide(idx) {
+      currentHeroSlide = idx;
+      const slide = HERO_SLIDES[idx];
+      const bb = document.getElementById("heroBillboard");
+      if (!bb) return;
+
+      bb.style.backgroundImage = `url('${slide.bg}')`;
+      document.getElementById("heroTagline").innerHTML = `<span>✨</span> ${slide.tag}`;
+      document.getElementById("heroTitle").textContent = slide.title;
+      document.getElementById("heroDesc").textContent = slide.desc;
+      document.getElementById("heroBtn1").onclick = () => { switchNav('tutor'); loadPresetQuestion(slide.preset); };
+
+      document.querySelectorAll(".tv-dot").forEach((d, i) => {
+        d.classList.toggle("active", i === idx);
+      });
+    }
+
+    
+    // Natural horizontal mouse wheel scroll translation
+    function initCarouselPhysics() {
+      document.querySelectorAll(".tv-scroller").forEach(scroller => {
+        scroller.addEventListener("wheel", (e) => {
+          if (e.deltaY !== 0 && Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
+            e.preventDefault();
+            scroller.scrollBy({
+              left: e.deltaY * 2.2,
+              behavior: "smooth"
+            });
+          }
+        }, { passive: false });
+      });
+    }
+
+    function initHeroCarousel() {
+      if (heroInterval) clearInterval(heroInterval);
+      heroInterval = setInterval(() => {
+        currentHeroSlide = (currentHeroSlide + 1) % HERO_SLIDES.length;
+        setHeroSlide(currentHeroSlide);
+      }, 7000);
+    }
+
+    // Hand-coded smooth linear interpolation (LERP) 60fps card tilt engine
+    let currentHoverTile = null;
+    let targetRotateX = 0, targetRotateY = 0;
+    let currentRotateX = 0, currentRotateY = 0;
+    let isTiltLoopActive = false;
+
+    function initParallaxTilt() {
+      document.addEventListener("mousemove", (e) => {
+        const tile = e.target.closest(".tv-card-tile, .tv-subject-poster, .tv-chapter-card");
+        if (tile) {
+          currentHoverTile = tile;
+          const rect = tile.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const cx = rect.width / 2;
+          const cy = rect.height / 2;
+          // Smooth, subtle angles (no jerky extremes)
+          targetRotateX = ((y - cy) / cy) * -8;
+          targetRotateY = ((x - cx) / cx) * 8;
+
+          if (!isTiltLoopActive) {
+            isTiltLoopActive = true;
+            requestAnimationFrame(renderTiltLoop);
+          }
+        } else if (currentHoverTile) {
+          targetRotateX = 0;
+          targetRotateY = 0;
+        }
+      });
+    }
+
+    function renderTiltLoop() {
+      if (!currentHoverTile && Math.abs(currentRotateX) < 0.05 && Math.abs(currentRotateY) < 0.05) {
+        isTiltLoopActive = false;
+        return;
+      }
+
+      // 12% frame smoothing (lerp formula: current += (target - current) * 0.12)
+      currentRotateX += (targetRotateX - currentRotateX) * 0.12;
+      currentRotateY += (targetRotateY - currentRotateY) * 0.12;
+
+      if (currentHoverTile) {
+        currentHoverTile.style.transform = `perspective(900px) rotateX(${currentRotateX.toFixed(2)}deg) rotateY(${currentRotateY.toFixed(2)}deg) scale3d(1.04, 1.04, 1.04) translateY(-6px)`;
+      }
+
+      // If released, ease back to rest position
+      if (targetRotateX === 0 && targetRotateY === 0 && currentHoverTile) {
+        if (Math.abs(currentRotateX) < 0.1 && Math.abs(currentRotateY) < 0.1) {
+          currentHoverTile.style.transform = "";
+          currentHoverTile = null;
+        }
+      }
+
+      requestAnimationFrame(renderTiltLoop);
+    }
+
+
+    /* ==========================================================================
+       HOME PAGE INTERACTIVE WIDGETS (MISSIONS, AUDIO, BRAIN TEASER)
+       ========================================================================== */
+    let audioCtx = null;
+    let isMusicPlaying = false;
+    let audioTimer = null;
+
+    function toggleFocusMusic() {
+      if (!isMusicPlaying) {
+        startAmbientSound();
+      } else {
+        stopAmbientSound();
+      }
+    }
+
+    function startAmbientSound() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        // Generate warm relaxing chord drones (calm ambient study music using Web Audio API)
+        const freqs = [174.61, 220.00, 261.63, 329.63]; // Fmaj7 chord
+        const masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+
+        window.ambientOscs = freqs.map((f, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = i % 2 === 0 ? "sine" : "triangle";
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+
+          // gentle vibrato lfo
+          const lfo = audioCtx.createOscillator();
+          const lfoGain = audioCtx.createGain();
+          lfo.frequency.value = 0.2 + (i * 0.05);
+          lfoGain.gain.value = 1.5;
+          lfo.connect(osc.frequency);
+          lfo.start();
+
+          gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start();
+          return { osc, lfo };
+        });
+
+        isMusicPlaying = true;
+        document.getElementById("musicIconWrap").style.background = "rgba(48, 209, 88, 0.25)";
+        document.getElementById("musicIconWrap").style.color = "var(--tv-accent-emerald)";
+        document.getElementById("musicIconWrap").textContent = "🎵";
+        document.getElementById("musicStatusText").textContent = "Ambient Focus Playing";
+        document.getElementById("musicSubText").textContent = "Click to pause audio";
+      } catch(e) {
+        console.log("Audio not supported", e);
+      }
+    }
+
+    function stopAmbientSound() {
+      if (window.ambientOscs) {
+        window.ambientOscs.forEach(o => {
+          try { o.osc.stop(); o.lfo.stop(); } catch(e){}
+        });
+        window.ambientOscs = null;
+      }
+      isMusicPlaying = false;
+      document.getElementById("musicIconWrap").style.background = "rgba(191, 90, 242, 0.15)";
+      document.getElementById("musicIconWrap").style.color = "#BF5AF2";
+      document.getElementById("musicIconWrap").textContent = "🎧";
+      document.getElementById("musicStatusText").textContent = "Lo-Fi Study Mode";
+      document.getElementById("musicSubText").textContent = "Click to play ambient focus";
+    }
+
+    function checkTeaser(btn, isCorrect, explanation) {
+      const container = document.getElementById("teaserOptions");
+      container.querySelectorAll(".tv-challenge-opt-btn").forEach(b => b.disabled = true);
+      const fb = document.getElementById("teaserFeedback");
+
+      if (isCorrect) {
+        btn.classList.add("correct");
+        fb.innerHTML = `<span style="color:var(--tv-accent-emerald);font-weight:bold;">🎉 Correct! +35 XP</span> • ${explanation}`;
+        userXp += 35;
+        userGems += 10;
+        localStorage.setItem("snapstudy_xp_v2", userXp);
+        localStorage.setItem("snapstudy_gems", userGems);
+        updateGamificationUI();
+      } else {
+        btn.classList.add("wrong");
+        fb.innerHTML = `<span style="color:var(--tv-accent-coral);font-weight:bold;">❌ Try again:</span> ${explanation}`;
+      }
+    }
+
+    function completeQuest(num) {
+      const item = document.getElementById("quest" + num);
+      if (item.classList.contains("completed")) return;
+      item.classList.add("completed");
+      const check = document.getElementById("check" + num);
+      check.textContent = "✓";
+
+      const rewards = { 1: 50, 2: 40, 3: 30 };
+      const xp = rewards[num] || 25;
+      userXp += xp;
+      userGems += 5;
+      localStorage.setItem("snapstudy_xp_v2", userXp);
+      localStorage.setItem("snapstudy_gems", userGems);
+      updateGamificationUI();
+
+      if (num === 1) {
+        setTimeout(() => switchNav('tutor'), 400);
+      } else if (num === 2) {
+        setTimeout(() => switchNav('practice'), 400);
+      }
+    }
+
+
+    /* ==========================================================================
+       PRACTICE LAB & FLASHCARD INTERACTIONS
+       ========================================================================== */
+    function handleQuizPick(btn, isCorrect, explanation) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.tv-quiz-btn').forEach(b => b.disabled = true);
+      const fb = document.getElementById("practiceFeedback");
+
+      if (isCorrect) {
+        btn.classList.add("correct");
+        fb.innerHTML = `<span style="color:var(--tv-accent-emerald);font-weight:bold;">✓ Correct! +20 XP</span><br><span style="color:var(--tv-text-secondary);">${explanation}</span>`;
+        userXp += 20;
+        userGems += 5;
+        localStorage.setItem("snapstudy_xp_v2", userXp);
+        localStorage.setItem("snapstudy_gems", userGems);
+        updateGamificationUI();
+      } else {
+        btn.classList.add("wrong");
+        fb.innerHTML = `<span style="color:var(--tv-accent-coral);font-weight:bold;">✗ Not quite.</span> (Unlimited tries — no hearts lost!)<br><span style="color:var(--tv-text-secondary);">${explanation}</span>`;
+      }
+    }
+
+    function flipActiveCard() {
+      const card = FLASHCARDS[activeCardIndex];
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        document.getElementById("fcPrompt").textContent = "💡 Answer:";
+        document.getElementById("fcPrompt").style.color = "var(--tv-accent-emerald)";
+        document.getElementById("fcText").textContent = card.a;
+        document.getElementById("fcText").style.color = "var(--tv-accent-cyan)";
+      } else {
+        document.getElementById("fcPrompt").textContent = "❓ Question (Click to flip):";
+        document.getElementById("fcPrompt").style.color = "var(--tv-text-muted)";
+        document.getElementById("fcText").textContent = card.q;
+        document.getElementById("fcText").style.color = "#FFF";
+      }
+    }
+
+    function nextFlashcard() {
+      activeCardIndex = (activeCardIndex + 1) % FLASHCARDS.length;
+      isFlipped = false;
+      const card = FLASHCARDS[activeCardIndex];
+      document.getElementById("fcPrompt").textContent = "❓ Question (Click to flip):";
+      document.getElementById("fcPrompt").style.color = "var(--tv-text-muted)";
+      document.getElementById("fcText").textContent = card.q;
+      document.getElementById("fcText").style.color = "#FFF";
+    }
+
+        /* ==========================================================================
+       LOGIN & USER PROFILE LOGIC (Cinematic STYLE)
+       ========================================================================== */
+    let currentStudent = localStorage.getItem("snapstudy_student") || "";
+    let generatedOtp = "4892";
+
+    function updateStudentUI() {
+      const name = currentStudent || "Student";
+      const navName = document.getElementById("navUserName");
+      if (navName) navName.textContent = name;
+      const profileName = document.getElementById("profileStudentName");
+      if (profileName) profileName.textContent = name;
+    }
+
+    function checkInitialAuth() {
+      const isAuth = localStorage.getItem("snapstudy_logged_in");
+      const savedName = localStorage.getItem("snapstudy_student");
+      const overlay = document.getElementById("loginOverlay");
+
+      if (!isAuth || !savedName) {
+        // Show login modal asking name first
+        if (overlay) {
+          overlay.classList.remove("hidden");
+          overlay.style.display = "flex";
+          overlay.style.opacity = "1";
+        }
+        showAuthStep("authStepName");
+        setTimeout(() => {
+          const inp = document.getElementById("studentNameInput");
+          if (inp) inp.focus();
+        }, 150);
+      } else {
+        currentStudent = savedName;
+        updateStudentUI();
+        if (overlay) {
+          overlay.classList.add("hidden");
+          overlay.style.display = "none";
+        }
+      }
+    }
+
+    function showAuthStep(stepId) {
+      ["authStepName", "authStepMethod", "authStepEmail", "authStepOtp"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = (id === stepId) ? "block" : "none";
+      });
+    }
+
+    function advanceToAuthChoice() {
+      const inp = document.getElementById("studentNameInput");
+      const val = inp ? inp.value.trim() : "";
+      if (!val) {
+        alert("Please enter your name to continue.");
+        if (inp) inp.focus();
+        return;
+      }
+      currentStudent = val;
+      const keyInp = document.getElementById("apiKeyInput");
+      if (keyInp) {
+        const k = keyInp.value.trim();
+        try { if (k) localStorage.setItem("snapstudy_api_key", k); } catch (e) {}
+        keyInp.value = "";
+      }
+      const greet = document.getElementById("welcomeGreetHeader");
+      if (greet) greet.textContent = `Welcome, ${val}!`;
+      showAuthStep("authStepMethod");
+    }
+
+    function backToMethodStep() {
+      showAuthStep("authStepMethod");
+    }
+
+    function showEmailInputStep() {
+      showAuthStep("authStepEmail");
+      setTimeout(() => {
+        const inp = document.getElementById("userEmailInput");
+        if (inp) inp.focus();
+      }, 100);
+    }
+
+    function sendOtpCode() {
+      const email = document.getElementById("userEmailInput").value.trim();
+      if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+      generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+      document.getElementById("otpTargetDisplay").textContent = email;
+      document.getElementById("hintCodeDisplay").textContent = generatedOtp;
+
+      // Clear input fields
+      ["d1", "d2", "d3", "d4"].forEach(id => {
+        const box = document.getElementById(id);
+        if (box) box.value = "";
+      });
+      document.getElementById("otpErrBox").innerHTML = "";
+
+      showAuthStep("authStepOtp");
+      setTimeout(() => {
+        const d1 = document.getElementById("d1");
+        if (d1) d1.focus();
+      }, 100);
+    }
+
+    function handleOtpInput(curr, nextId) {
+      if (curr.value.length >= 1) {
+        curr.value = curr.value.slice(-1);
+        if (nextId) {
+          const next = document.getElementById(nextId);
+          if (next) next.focus();
+        } else {
+          // If 4th digit entered, auto-verify
+          setTimeout(verifyOtpAndEnter, 150);
+        }
+      }
+    }
+
+    function verifyOtpAndEnter() {
+      const d1 = document.getElementById("d1").value;
+      const d2 = document.getElementById("d2").value;
+      const d3 = document.getElementById("d3").value;
+      const d4 = document.getElementById("d4").value;
+      const code = d1 + d2 + d3 + d4;
+
+      if (code === generatedOtp) {
+        finishAuthentication(currentStudent, "email");
+      } else {
+        const err = document.getElementById("otpErrBox");
+        if (err) err.innerHTML = `<span style="color:var(--tv-accent-coral);font-weight:600;">Incorrect code. Enter ${generatedOtp}</span>`;
+      }
+    }
+
+    // Google OAuth 2.0 Client & Fallback Simulation
+    let googleClientId = localStorage.getItem("snapstudy_google_client_id") || "";
+
+    function initGoogleOAuth() {
+      if (window.google && window.google.accounts && googleClientId) {
+        try {
+          google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false
+          });
+        } catch(e) {
+          console.warn("Google OAuth init:", e);
+        }
+      }
+    }
+
+    function handleGoogleCredentialResponse(response) {
+      try {
+        // Decode JWT payload
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const profile = JSON.parse(jsonPayload);
+        const name = profile.given_name || profile.name || currentStudent || "Scholar";
+        localStorage.setItem("snapstudy_user_email", profile.email || "");
+        localStorage.setItem("snapstudy_user_avatar", profile.picture || "");
+        finishAuthentication(name, "google");
+      } catch (err) {
+        finishAuthentication(currentStudent || "Scholar", "google");
+      }
+    }
+
+    /* ==========================================================================
+       CLERK SIGN-IN
+       Paste your Clerk "Publishable key" (starts with pk_test_ or pk_live_) between the quotes.
+       It is safe to put in a web page. NEVER paste the Secret key (sk_...) anywhere here.
+       ========================================================================== */
+    const CLERK_PUBLISHABLE_KEY = "";
+
+    function loadClerk() {
+      return new Promise((resolve, reject) => {
+        if (window.Clerk && window.Clerk.loaded) return resolve(window.Clerk);
+        let domain;
+        try { domain = atob(CLERK_PUBLISHABLE_KEY.split("_").slice(2).join("_")).replace(/\$$/, ""); } catch (e) { return reject(new Error("bad key")); }
+        const sc = document.createElement("script");
+        sc.async = true;
+        sc.crossOrigin = "anonymous";
+        sc.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+        sc.src = `https://${domain}/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+        sc.onload = async () => {
+          try {
+            await window.Clerk.load();
+            window.Clerk.addListener(({ user }) => {
+              if (user && localStorage.getItem("snapstudy_logged_in") !== "true") {
+                try { localStorage.setItem("snapstudy_user_email", (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) || ""); } catch (e) {}
+                finishAuthentication(user.firstName || currentStudent || "Scholar", "clerk");
+              }
+            });
+            resolve(window.Clerk);
+          } catch (e) { reject(e); }
+        };
+        sc.onerror = () => reject(new Error("load"));
+        document.head.appendChild(sc);
+      });
+    }
+
+    async function signInWithClerk() {
+      try {
+        const clerk = await loadClerk();
+        if (clerk.user) { finishAuthentication(clerk.user.firstName || currentStudent || "Scholar", "clerk"); return; }
+        clerk.openSignIn({});
+      } catch (e) {
+        alert("Sign-in couldn't load. Check your internet, or tap \"Skip for now (Guest Mode)\".");
+      }
+    }
+
+    // Google button: goes through Clerk
+    function signInWithGoogleFlow() {
+      if (CLERK_PUBLISHABLE_KEY) return signInWithClerk();
+      alert("Sign-in isn't set up yet. Tap \"Skip for now (Guest Mode)\" to start studying. Your name is already saved.");
+    }
+
+    // (Old direct Google redirect, no longer used)
+    function signInWithGoogleFlowOld() {
+      // Google only accepts a real client ID that the app owner registered for this exact web address.
+      // Without one (or when the page is opened as a file) Google shows the "400 malformed" error,
+      // so we explain it here instead of sending the student to a broken page.
+      if (!googleClientId || window.location.protocol === "file:") {
+        alert("Google sign-in isn't set up for this app yet, so it can't work. Tap \"Skip for now (Guest Mode)\" to start studying. Your name is already saved.");
+        return;
+      }
+      const btn = document.querySelector(".tv-google-signin-btn");
+      if (btn) btn.innerHTML = "<span>⏳ Redirecting to Google OAuth...</span>";
+
+      const currentOrigin = window.location.origin + window.location.pathname;
+      const clientId = googleClientId;
+      
+      // Save pending login state so when redirected back, user is authenticated
+      localStorage.setItem("snapstudy_pending_oauth", "true");
+      localStorage.setItem("snapstudy_pending_name", currentStudent || "Scholar");
+
+      const oauthUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+        "client_id=" + encodeURIComponent(clientId) + "&" +
+        "redirect_uri=" + encodeURIComponent(currentOrigin) + "&" +
+        "response_type=token%20id_token&" +
+        "scope=openid%20profile%20email&" +
+        "nonce=" + Math.random().toString(36).substring(2) + "&" +
+        "prompt=select_account";
+
+      // Redirect browser directly to Google OAuth page
+      window.location.href = oauthUrl;
+    }
+
+    // Check if returning from Google OAuth redirect (URL hash contains access_token or id_token)
+    function handleOAuthReturn() {
+      if (window.location.hash || localStorage.getItem("snapstudy_pending_oauth")) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const idToken = hashParams.get("id_token") || hashParams.get("access_token");
+        if (idToken) {
+          const studentName = localStorage.getItem("snapstudy_pending_name") || "Scholar";
+          localStorage.removeItem("snapstudy_pending_oauth");
+          localStorage.removeItem("snapstudy_pending_name");
+          window.history.replaceState(null, "", window.location.pathname);
+          finishAuthentication(studentName, "google");
+        }
+      }
+    }
+
+    function completeSignInDirectly() {
+      finishAuthentication(currentStudent || "Student", "guest");
+    }
+
+    function finishAuthentication(name, method) {
+      currentStudent = name;
+      localStorage.setItem("snapstudy_student", name);
+      localStorage.setItem("snapstudy_logged_in", "true");
+      localStorage.setItem("snapstudy_auth_method", method);
+      updateStudentUI();
+
+      const overlay = document.getElementById("loginOverlay");
+      if (overlay) {
+        overlay.style.opacity = "0";
+        overlay.style.transform = "scale(1.04)";
+        setTimeout(() => {
+          overlay.classList.add("hidden");
+          overlay.style.display = "none";
+        }, 400);
+      }
+    }
+
+    function openLoginModal() {
+      const overlay = document.getElementById("loginOverlay");
+      if (overlay) {
+        overlay.classList.remove("hidden");
+        overlay.style.display = "flex";
+        overlay.style.opacity = "1";
+        overlay.style.transform = "scale(1)";
+        showAuthStep("authStepName");
+        const inp = document.getElementById("studentNameInput");
+        if (inp) {
+          inp.value = currentStudent || "";
+          inp.focus();
+        }
+      }
+    }
+
+    
+    /* ==========================================================================
+       SUBJECT CHAPTER MODAL CONTROLLER
+       ========================================================================== */
+    function openChapterModal(subjectId) {
+      const sub = SUBJECTS.find(s => s.id === subjectId) || SUBJECTS[0];
+      const overlay = document.getElementById("chapterModalOverlay");
+      if (!overlay) return;
+
+      document.getElementById("modalBanner").style.backgroundImage = `url('${sub.bg}')`;
+      document.getElementById("modalSubjectBadge").textContent = `Class 6 • ${sub.name}`;
+      document.getElementById("modalSubjectTitle").textContent = `${sub.icon} ${sub.name}`;
+      document.getElementById("modalSubjectDesc").textContent = sub.desc;
+
+      const list = document.getElementById("modalChapterList");
+      list.innerHTML = "";
+
+      sub.chapters.forEach((chap, idx) => {
+        const item = document.createElement("div");
+        item.className = "tv-chapter-card";
+        item.onclick = () => {
+          closeChapterModal();
+          selectSubjectAndLearn(sub);
+          loadPresetQuestion(chap.query);
+        };
+        item.innerHTML = `
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div class="tv-chapter-num">${idx + 1}</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#FFF;">${chap.title}</div>
+              <div style="font-size:12.5px;color:var(--tv-text-secondary);margin-top:2px;">${chap.desc}</div>
+            </div>
+          </div>
+          <button class="tv-chip" style="color:var(--tv-accent-cyan);">Study Chapter ›</button>
+        `;
+        list.appendChild(item);
+      });
+
+      overlay.classList.add("active");
+    }
+
+    function closeChapterModal(e) {
+      const overlay = document.getElementById("chapterModalOverlay");
+      if (overlay) overlay.classList.remove("active");
+    }
+
+    /* ==========================================================================
+       STUDY TIMER (FOCUS SESSIONS)
+       ========================================================================== */
+    let studyTimerSeconds = 25 * 60;
+    let studyTimerInterval = null;
+    let isTimerRunning = false;
+
+    function toggleStudyTimer() {
+      if (isTimerRunning) {
+        clearInterval(studyTimerInterval);
+        isTimerRunning = false;
+        document.getElementById("timerToggleBtn").textContent = "▶ Resume";
+      } else {
+        isTimerRunning = true;
+        document.getElementById("timerToggleBtn").textContent = "⏸ Pause";
+        studyTimerInterval = setInterval(() => {
+          if (studyTimerSeconds > 0) {
+            studyTimerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(studyTimerInterval);
+            isTimerRunning = false;
+            alert("🎉 Great focus session completed! You earned +50 XP!");
+            userXp += 50;
+            userGems += 10;
+            updateGamificationUI();
+            resetStudyTimer();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetStudyTimer() {
+      clearInterval(studyTimerInterval);
+      isTimerRunning = false;
+      studyTimerSeconds = 25 * 60;
+      updateTimerDisplay();
+      const btn = document.getElementById("timerToggleBtn");
+      if (btn) btn.textContent = "▶ Start 25m Focus";
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(studyTimerSeconds / 60);
+      const s = studyTimerSeconds % 60;
+      const el = document.getElementById("studyTimerDisplay");
+      if (el) el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    
+    /* ==========================================================================
+       EXCLUSIVE ORIGINAL FEATURE: CINEMATIC X-RAY LENS & AMBIENT BACKLIGHT
+       ========================================================================== */
+    let isXRayActive = false;
+    let isAmbientHigh = true;
+
+    function toggleXRayLens() {
+      isXRayActive = !isXRayActive;
+      const btn = document.getElementById("xrayToggleBtn");
+      const lens = document.getElementById("xrayLens");
+      const hud = document.getElementById("xrayHudCard");
+
+      if (isXRayActive) {
+        btn.classList.add("active");
+        if (hud) hud.style.display = "block";
+        // If not already in tutor view, smoothly take user there to demo
+        if (!document.getElementById("view-tutor").classList.contains("active")) {
+          switchNav("tutor");
+        }
+      } else {
+        btn.classList.remove("active");
+        if (lens) lens.style.display = "none";
+        if (hud) hud.style.display = "none";
+      }
+    }
+
+    // Real magnifier: it zooms into the actual photo under the cursor.
+    // It does not read or describe the page, so it never shows made-up "scan" results.
+    function handleXRayMove(e) {
+      if (!isXRayActive) return;
+      const img = document.getElementById("activePhoto");
+      const stage = document.getElementById("stageViewport");
+      const lens = document.getElementById("xrayLens");
+      const hudText = document.getElementById("xrayHudText");
+      const pill = document.getElementById("xrayPillTag");
+      if (!stage || !lens) return;
+      if (!img || img.style.display === "none" || !img.src) { lens.style.display = "none"; return; }
+
+      const r = img.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) { lens.style.display = "none"; return; }
+
+      const Z = 2.5;
+      const sr = stage.getBoundingClientRect();
+      const half = lens.offsetWidth / 2 || 110;
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      lens.style.display = "block";
+      lens.style.left = `${e.clientX - sr.left}px`;
+      lens.style.top = `${e.clientY - sr.top}px`;
+      lens.style.backgroundImage = `url("${img.src}")`;
+      lens.style.backgroundRepeat = "no-repeat";
+      lens.style.backgroundSize = `${r.width * Z}px ${r.height * Z}px`;
+      lens.style.backgroundPosition = `${half - px * Z}px ${half - py * Z}px`;
+      if (pill) pill.textContent = "MAGNIFIER";
+      if (hudText) hudText.textContent = "Move over your photo to zoom in on small writing. Press X to turn it off.";
+    }
+
+    function hideXRayLens() {
+      const lens = document.getElementById("xrayLens");
+      if (lens) lens.style.display = "none";
+    }
+
+    function toggleCinematicLight() {
+      isAmbientHigh = !isAmbientHigh;
+      const backdrop = document.getElementById("ambientBackdrop");
+      if (backdrop) {
+        backdrop.style.opacity = isAmbientHigh ? "0.9" : "0.3";
+        backdrop.style.filter = isAmbientHigh ? "blur(90px)" : "blur(140px)";
+      }
+    }
+
+    function triggerQuickSolverShortcut() {
+      switchNav("tutor");
+      loadPresetQuestion(trayFiles.length ? "Give a 5-step solution for the question in my photo" : "Provide 5-Step NCERT solution for shaded fractions");
+      const st = document.getElementById("chatStream");
+      setTimeout(() => { st.scrollTop = st.scrollHeight; }, 700);
+    }
+
+    // Keyboard Cinematic Remote Arrow Navigation (Up, Down, Left, Right, Select)
+    document.addEventListener("keydown", (e) => {
+      // Don't hijack if user is typing in inputs
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+
+      if (e.key === "x" || e.key === "X") {
+        toggleXRayLens();
+      } else if (e.key === "1") {
+        switchNav("home");
+      } else if (e.key === "2") {
+        switchNav("tutor");
+      } else if (e.key === "3") {
+        switchNav("subjects");
+      } else if (e.key === "4") {
+        switchNav("practice");
+      }
+    });
+
+    /* ==========================================================================
+       INIT ON DOM READY
+       ========================================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+      renderCarousels();
+      updateGamificationUI();
+      clearChat();
+      initHeroCarousel();
+      initParallaxTilt();
+      initCarouselPhysics();
+      handleOAuthReturn();
+      checkInitialAuth();
+    });
+  </script>
+
+  <!-- ======================================================================
+       Cinematic SUBJECT CHAPTER DRILLDOWN MODAL
+       ====================================================================== -->
+  <div class="tv-chapter-modal-overlay" id="chapterModalOverlay" onclick="closeChapterModal(event)">
+    <div class="tv-chapter-modal" onclick="event.stopPropagation()">
+      <div class="tv-modal-banner" id="modalBanner">
+        <div class="tv-modal-banner-overlay"></div>
+        <button class="tv-modal-close-btn" onclick="closeChapterModal()">✕</button>
+        <div class="tv-modal-banner-content">
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--tv-accent-cyan);" id="modalSubjectBadge">Class 6 Subject</div>
+          <h2 style="font-family:var(--font-display);font-size:32px;font-weight:800;color:#FFF;margin-top:4px;" id="modalSubjectTitle">Mathematics</h2>
+          <p style="font-size:14px;color:var(--tv-text-secondary);margin-top:4px;" id="modalSubjectDesc">NCERT Full Class 6 Syllabus</p>
+        </div>
+      </div>
+      <div class="tv-modal-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+          <h3 style="font-family:var(--font-display);font-size:18px;font-weight:700;color:#FFF;">NCERT Chapters & Topic Solvers</h3>
+          <span style="font-size:12px;color:var(--tv-text-muted);">Click any chapter to launch interactive tutoring</span>
+        </div>
+        <div id="modalChapterList"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       EXCLUSIVE ORIGINAL FEATURE: CINEMATIC X-RAY LENS & Cinematic CONTROL HUD
+       ====================================================================== -->
+  <div class="tv-remote-hud" id="remoteHud">
+    <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--tv-accent-cyan);display:flex;align-items:center;gap:6px;">
+      <span>⚡ Quick Tools</span>
+    </div>
+    <button class="tv-remote-btn" id="xrayToggleBtn" onclick="toggleXRayLens()">
+      <span>🔬</span>
+      <span>Magnifier</span>
+    </button>
+    <button class="tv-remote-btn" onclick="toggleCinematicLight()">
+      <span>✨</span>
+      <span>Atmospheric Ambient</span>
+    </button>
+    <button class="tv-remote-btn" onclick="triggerQuickSolverShortcut()">
+      <span>⚡</span>
+      <span>Instant 5-Step</span>
+    </button>
+  </div>
+
+
+  <script>
+    // Until a Clerk key is added, hide the sign-in choices that can't really work and make Guest the clear path.
+    (function () {
+      try {
+        if (typeof CLERK_PUBLISHABLE_KEY !== "undefined" && CLERK_PUBLISHABLE_KEY) return;
+        const step = document.getElementById("authStepMethod");
+        if (!step) return;
+        step.querySelectorAll(".tv-google-signin-btn, .tv-auth-divider").forEach(el => el.style.display = "none");
+        step.querySelectorAll("button").forEach(b => {
+          if ((b.getAttribute("onclick") || "").includes("showEmailInputStep")) b.style.display = "none";
+          if ((b.getAttribute("onclick") || "").includes("completeSignInDirectly")) {
+            b.removeAttribute("style");
+            b.className = "tv-dialog-btn-primary";
+            b.innerHTML = "<span>Start studying</span><span>→</span>";
+          }
+        });
+        const sub = step.querySelector(".tv-dialog-sub");
+        if (sub) sub.textContent = "You're all set. Your progress is saved on this device.";
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
