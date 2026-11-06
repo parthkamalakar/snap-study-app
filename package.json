@@ -1,0 +1,8 @@
+{
+  "name": "snap-study-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && cp public/index.html public/styles.css dist/"
+  }
+}
