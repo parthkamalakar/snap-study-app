@@ -2951,15 +2951,16 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
        GEMINI (optional): if a key was pasted at login, photos are read by Gemini.
        Without a key the free in-browser reader (OCR) is used.
        ========================================================================== */
+    const GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
     async function callClaude({ system, content, max = 1024, signal }) {   // talks to Gemini
-      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent", {
         method: "POST", signal,
         headers: { "content-type": "application/json", "x-goog-api-key": getApiKey() },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
           contents: [{ role: "user", parts: content }],
-          generationConfig: { maxOutputTokens: max, thinkingConfig: { thinkingBudget: 0 } }
+          generationConfig: { maxOutputTokens: max + 1024 }
         })
       });
       if (!res.ok) {
