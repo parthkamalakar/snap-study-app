@@ -2954,25 +2954,36 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
     const GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
     async function callClaude({ system, content, max = 1024, signal }) {   // talks to Gemini
-      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent", {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 60000);
+      if (signal) signal.addEventListener("abort", () => ctl.abort());
+      signal = ctl.signal;
+      let res;
+      try { res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent", {
         method: "POST", signal,
         headers: { "content-type": "application/json", "x-goog-api-key": getApiKey() },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
           contents: [{ role: "user", parts: content }],
-          generationConfig: { maxOutputTokens: max + 1024 }
+          generationConfig: { maxOutputTokens: max + 4096 }
         })
-      });
+      }); } catch (e) {
+        clearTimeout(timer);
+        if (e && e.name === "AbortError") throw new Error("Took too long (over a minute). Please try again.");
+        throw new Error("Couldn't reach Gemini. Check your internet and try again.");
+      }
+      clearTimeout(timer);
       if (!res.ok) {
         let m = ""; try { m = (await res.json()).error.message; } catch (e) {}
         const bad = res.status === 401 || res.status === 403 || /API key/i.test(m);
         if (bad) try { localStorage.removeItem("snapstudy_api_key"); } catch (e) {}
-        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : (m || "Gemini couldn't answer right now.")));
+        console.error("Gemini error", res.status, m);
+        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : ("Gemini said (" + res.status + "): " + (m || "no details") )));
         err.status = res.status; throw err;
       }
       const j = await res.json();
       const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
-      const out = parts.map(x => x.text || "").join("");
+      const out = parts.filter(x => !x.thought).map(x => x.text || "").join("");
       if (!out) throw new Error("Gemini sent back an empty answer. Please try again.");
       return out;
     }
@@ -3008,8 +3019,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         });
         html = escHtml(out).replace(/\n/g, "<br>"); ok = true;
       } catch (err) {
-        html = escHtml(err.message || "Something went wrong.");
+        console.error(err);
+        html = escHtml((err && err.message) || "Something went wrong.");
       }
+      if (!html) html = "Something went wrong. Please try again.";
       botMsg.innerHTML = `<div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div><div class="tv-msg-bubble">${html}<div class="tv-chat-controls"><button class="tv-chip" onclick="speakText(this.parentElement.parentElement.innerText)">🔊 Read Aloud</button></div></div>`;
       if (ok) {
         userXp += 25; userGems += 5;
