@@ -2953,7 +2953,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
        ========================================================================== */
     const GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
-    async function callClaude({ system, content, max = 1024, signal }) {   // talks to Gemini
+    async function callClaude({ system, content, max = 1024, signal, think = true }) {   // talks to Gemini
       const ctl = new AbortController();
       const timer = setTimeout(() => ctl.abort(), 60000);
       if (signal) signal.addEventListener("abort", () => ctl.abort());
@@ -2965,7 +2965,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
           contents: [{ role: "user", parts: content }],
-          generationConfig: { maxOutputTokens: max + 4096 }
+          generationConfig: Object.assign({ maxOutputTokens: max + 4096 }, think ? { thinkingConfig: { thinkingLevel: "low" } } : {})
         })
       }); } catch (e) {
         clearTimeout(timer);
@@ -2973,6 +2973,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         throw new Error("Couldn't reach Gemini. Check your internet and try again.");
       }
       clearTimeout(timer);
+      if (res.status === 400 && think) {      // this model may not accept the "think less" setting: try once without it
+        let m0 = ""; try { m0 = (await res.clone().json()).error.message; } catch (e) {}
+        if (/think/i.test(m0)) return callClaude({ system, content, max, signal, think: false });
+      }
       if (!res.ok) {
         let m = ""; try { m = (await res.json()).error.message; } catch (e) {}
         const bad = res.status === 401 || res.status === 403 || /API key/i.test(m);
