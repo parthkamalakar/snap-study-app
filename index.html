@@ -3499,9 +3499,11 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
       };
     }
 
+    // Suggestions only fill the box. Nothing is sent until the student presses Send.
     function loadPresetQuestion(q) {
-      document.getElementById("chatInput").value = q;
-      submitMessage();
+      const box = document.getElementById("chatInput");
+      box.value = q;
+      box.focus();
     }
 
     function clearChat() {
@@ -4313,6 +4315,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
     function triggerQuickSolverShortcut() {
       switchNav("tutor");
       loadPresetQuestion(trayFiles.length ? "Give a 5-step solution for the question in my photo" : "Provide 5-Step NCERT solution for shaded fractions");
+      submitMessage();   // the student pressed this tool button, so it sends
       const st = document.getElementById("chatStream");
       setTimeout(() => { st.scrollTop = st.scrollHeight; }, 700);
     }
