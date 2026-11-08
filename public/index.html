@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snap Study — Class 6 AI Study Assistant</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2316130c'/%3E%3Cpath d='M16 9c-2.6-1.7-6-2.3-10-2v16c4-.3 7.4.3 10 2 2.6-1.7 6-2.3 10-2V7c-4-.3-7.4.3-10 2zM16 9v16' fill='none' stroke='%23FFD60A' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>Snap Study — Class 6 Study App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -912,11 +913,10 @@
       width: 38px;
       height: 38px;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--tv-accent-blue), var(--tv-accent-cyan));
+      background: #16130c;
+      border: 1px solid rgba(255, 214, 10, 0.35);
       display: grid;
       place-items: center;
-      font-size: 18px;
-      box-shadow: 0 4px 14px rgba(10, 132, 255, 0.4);
     }
     .tv-persona-name {
       font-family: var(--font-display);
@@ -2115,7 +2115,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
     <!-- Cinematic Glass Navigation Bar -->
     <header class="tv-nav">
       <div class="tv-brand" onclick="switchNav('home')" style="cursor:pointer;">
-        <div class="tv-brand-logo">📸</div>
+        <div class="tv-brand-logo"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path d="M16 9c-2.6-1.7-6-2.3-10-2v16c4-.3 7.4.3 10 2 2.6-1.7 6-2.3 10-2V7c-4-.3-7.4.3-10 2z" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 9v16" stroke="#FFD60A" stroke-width="2.2"/></svg></div>
         <div>
           <div class="tv-brand-title">
             Snap Study
@@ -2127,7 +2127,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
       <!-- Centered Cinematic Navigation Pills -->
       <nav class="tv-nav-menu">
         <button class="tv-nav-tab active" data-nav="home" onclick="switchNav('home')">Home</button>
-        <button class="tv-nav-tab" data-nav="tutor" onclick="switchNav('tutor')">AI Tutor</button>
+        <button class="tv-nav-tab" data-nav="tutor" onclick="switchNav('tutor')">Tutor</button>
         <button class="tv-nav-tab" data-nav="subjects" onclick="switchNav('subjects')">Subjects</button>
         <button class="tv-nav-tab" data-nav="homework" onclick="switchNav('homework')">Homework</button>
         <button class="tv-nav-tab" data-nav="practice" onclick="switchNav('practice')">Practice</button>
@@ -2176,7 +2176,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
           </p>
           <div class="tv-hero-actions">
             <button class="tv-btn-primary" id="heroBtn1" onclick="switchNav('tutor'); loadPresetQuestion('Explain Fractions with examples')">
-              <span>▶</span> Open AI Tutor
+              <span>▶</span> Open Tutor
             </button>
             <button class="tv-btn-secondary" id="heroBtn2" onclick="triggerPhotoUpload()">
               <span>📸</span> Upload Textbook Photo
@@ -2459,9 +2459,9 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         <div class="tv-chat-stage">
           <div class="tv-chat-header">
             <div class="tv-tutor-persona">
-              <div class="tv-persona-avatar">🦉</div>
+              <div class="tv-persona-avatar"><svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><path d="M16 9c-2.6-1.7-6-2.3-10-2v16c4-.3 7.4.3 10 2 2.6-1.7 6-2.3 10-2V7c-4-.3-7.4.3-10 2z" fill="none" stroke="#FFD60A" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 9v16" stroke="#FFD60A" stroke-width="2.2"/></svg></div>
               <div>
-                <div class="tv-persona-name">Snap Study AI Tutor</div>
+                <div class="tv-persona-name">Snap Study Tutor</div>
                 <div class="tv-persona-sub">Class 6 Expert • 100% Free • Unlimited Retries</div>
               </div>
             </div>
@@ -2954,8 +2954,9 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
     const GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
     async function callClaude({ system, content, max = 1024, signal, think = true, tries = 0 }) {   // talks to Gemini
+      let timedOut = false;
       const ctl = new AbortController();
-      const timer = setTimeout(() => ctl.abort(), 60000);
+      const timer = setTimeout(() => { timedOut = true; ctl.abort(); }, 45000);
       if (signal) signal.addEventListener("abort", () => ctl.abort());
       signal = ctl.signal;
       let res;
@@ -2965,11 +2966,13 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
           contents: [{ role: "user", parts: content }],
-          generationConfig: Object.assign({ maxOutputTokens: max + 4096 }, think ? { thinkingConfig: { thinkingLevel: "low" } } : {})
+          generationConfig: Object.assign({ maxOutputTokens: max + 4096 }, think ? { thinkingConfig: { thinkingLevel: "minimal" } } : {})
         })
       }); } catch (e) {
         clearTimeout(timer);
-        if (e && e.name === "AbortError") throw new Error("Took too long (over a minute). Please try again.");
+        if (e && e.name === "AbortError" && timedOut && tries < 2)   // slow answer: try once more
+          return callClaude({ system, content, max, signal: arguments[0].signal, think, tries: tries + 1 });
+        if (e && e.name === "AbortError") throw new Error("Gemini is too slow right now. Please try again in a minute.");
         throw new Error("Couldn't reach Gemini. Check your internet and try again.");
       }
       clearTimeout(timer);
@@ -3346,7 +3349,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
 
         if (resp.type === "chat") {
           botMsg.innerHTML = `
-            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div>
             <div class="tv-msg-bubble">
               ${resp.text}
               <div class="tv-chat-controls">
@@ -3357,7 +3360,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
           `;
         } else if (resp.type === "math") {
           botMsg.innerHTML = `
-            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div>
             <div class="tv-msg-bubble">
               <div style="font-size:16px;font-weight:700;color:var(--tv-accent-cyan);margin-bottom:6px;">${resp.title}</div>
               
@@ -3392,7 +3395,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         } else {
           // Science / Lesson
           botMsg.innerHTML = `
-            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • ${time}</div>
+            <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • ${time}</div>
             <div class="tv-msg-bubble">
               <div style="font-size:16px;font-weight:700;color:var(--tv-accent-cyan);margin-bottom:6px;">${resp.title}</div>
               <p>${resp.summary}</p>
@@ -3531,7 +3534,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
       const stream = document.getElementById("chatStream");
       stream.innerHTML = `
         <div class="tv-msg assistant">
-          <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study AI Tutor • Just now</div>
+          <div style="font-size:11px;color:var(--tv-text-muted);font-weight:600;">Snap Study Tutor • Just now</div>
           <div class="tv-msg-bubble">
             👋 <strong>Welcome to Snap Study!</strong><br>
             What would you like to explore today? Snap a photo or ask a question in any Class 6 subject.
