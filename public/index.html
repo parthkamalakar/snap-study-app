@@ -2953,7 +2953,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
        ========================================================================== */
     const GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
-    async function callClaude({ system, content, max = 1024, signal, think = true }) {   // talks to Gemini
+    async function callClaude({ system, content, max = 1024, signal, think = true, tries = 0 }) {   // talks to Gemini
       const ctl = new AbortController();
       const timer = setTimeout(() => ctl.abort(), 60000);
       if (signal) signal.addEventListener("abort", () => ctl.abort());
@@ -2975,14 +2975,18 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
       clearTimeout(timer);
       if (res.status === 400 && think) {      // this model may not accept the "think less" setting: try once without it
         let m0 = ""; try { m0 = (await res.clone().json()).error.message; } catch (e) {}
-        if (/think/i.test(m0)) return callClaude({ system, content, max, signal, think: false });
+        if (/think/i.test(m0)) return callClaude({ system, content, max, signal, think: false, tries });
+      }
+      if ((res.status === 503 || res.status === 500) && tries < 3) {   // Google is busy: wait a bit and try again by itself
+        await new Promise(r => setTimeout(r, 2500 * (tries + 1)));
+        return callClaude({ system, content, max, signal: arguments[0].signal, think, tries: tries + 1 });
       }
       if (!res.ok) {
         let m = ""; try { m = (await res.json()).error.message; } catch (e) {}
         const bad = res.status === 401 || res.status === 403 || /API key/i.test(m);
         if (bad) try { localStorage.removeItem("snapstudy_api_key"); } catch (e) {}
         console.error("Gemini error", res.status, m);
-        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : ("Gemini said (" + res.status + "): " + (m || "no details") )));
+        const err = new Error(bad ? "That key didn't work, so I removed it. Add a new one when you log in again." : (res.status === 429 ? "Too many questions at once. Wait a moment and try again." : (res.status === 503 ? "Gemini is very busy right now. I tried 4 times. Wait a minute and press send again." : "Gemini said (" + res.status + "): " + (m || "no details"))));
         err.status = res.status; throw err;
       }
       const j = await res.json();
