@@ -7,7 +7,7 @@
   <title>Snap Study — Class 6 Study App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700;800&family=SF+Pro+Text:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   
   <style>
     /* ==========================================================================
@@ -1971,25 +1971,158 @@
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style id="polish">
-/* Parth's polish: softer borders, smooth motion */
-:root{--tv-glass-border:rgba(255,255,255,.10);--smooth:cubic-bezier(.22,.8,.24,1)}
-html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-.tv-card-tile,.tv-subject-poster,.tv-stat-card,.tv-btn-primary,.tv-btn-secondary{
-  border-radius:20px;border:1px solid rgba(255,255,255,.10);
-  transition:transform .45s var(--smooth),box-shadow .45s var(--smooth),background-color .3s ease,border-color .3s ease;
-  will-change:transform}
-.tv-btn-primary,.tv-btn-secondary{border-radius:999px}
-.tv-card-tile:hover,.tv-card-tile:focus,.tv-subject-poster:hover,.tv-subject-poster:focus,.tv-stat-card:hover{
-  border-color:rgba(255,255,255,.28)}
-.tv-btn-primary:active,.tv-btn-secondary:active,.tv-card-tile:active,.tv-subject-poster:active{transform:scale(.97);transition-duration:.12s}
-:focus-visible{outline:2px solid var(--tv-accent-cyan);outline-offset:3px;border-radius:12px}
-input,textarea,select{border:1px solid rgba(255,255,255,.14);border-radius:14px;transition:border-color .25s ease,box-shadow .25s ease}
-input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accent-cyan);box-shadow:0 0 0 3px rgba(100,210,255,.22)}
+/* Snap Study design layer — one accent (gold), warm neutrals, hairline borders, Inter + mono */
+:root{
+  --bg:#0d0d0b;--s1:#151512;--s2:#1b1b17;--s3:#232320;
+  --line:rgba(255,248,230,.08);--line-2:rgba(255,248,230,.16);
+  --ink:#f1efe8;--ink-2:#b4b1a6;--ink-3:#7d7b71;
+  --gold:#f5c518;--gold-ink:#1a1500;--ok:#4cc38a;--bad:#ef6b5f;
+  --r-s:8px;--r-m:12px;--r-l:16px;
+  --smooth:cubic-bezier(.22,.8,.24,1);--dur:.18s;
+  --tv-bg:var(--bg);--tv-canvas:var(--bg);--tv-glass-border:var(--line);
+  --tv-text-primary:var(--ink);--tv-text-secondary:var(--ink-2);--tv-text-muted:var(--ink-3);
+  --tv-accent-cyan:var(--gold);--tv-accent-blue:var(--gold);--tv-accent-purple:var(--ink-2);
+  --tv-accent-amber:var(--gold);--tv-accent-emerald:var(--ok);--tv-accent-coral:var(--bad);
+  --tv-focus-scale:1;--tv-focus-shadow:0 0 0 2px var(--gold);--tv-card-shadow:none;
+  --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-text:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--font-text);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+.tv-ambient-backdrop{display:none}
+.tv-Cinematic-badge{display:none}
+
+/* Top bar */
+header.tv-nav{height:60px;padding:0 28px;background:rgba(13,13,11,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);gap:20px}
+.tv-brand{gap:10px}
+.tv-brand-logo{width:32px;height:32px;border-radius:var(--r-s);background:var(--s2);border:1px solid var(--line-2);box-shadow:none}
+.tv-brand-logo svg{width:18px;height:18px}
+.tv-brand-title{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.tv-nav-menu{display:flex;gap:2px;background:none;border:0;padding:0;box-shadow:none}
+.tv-nav-tab{font:500 14px/1 var(--font-text);color:var(--ink-3);background:none;border:0;border-radius:var(--r-s);
+  padding:9px 14px;position:relative;transition:color var(--dur),background var(--dur)}
+.tv-nav-tab:hover{color:var(--ink);background:var(--s1)}
+.tv-nav-tab.active{color:var(--ink);background:var(--s2);box-shadow:none}
+.tv-nav-tab.active::after{content:"";position:absolute;left:14px;right:14px;bottom:-12px;height:2px;background:var(--gold);border-radius:2px}
+.tv-header-actions{gap:8px}
+.tv-stat-pill,.tv-timer-shelf,.tv-user-nav-btn{background:var(--s1);border:1px solid var(--line);border-radius:var(--r-s);
+  box-shadow:none;color:var(--ink-2)!important;font:500 13px/1 var(--font-text);padding:7px 10px}
+.tv-stat-pill span:first-child,.tv-timer-shelf>span:first-child{filter:grayscale(1) contrast(1.1);opacity:.8}
+.tv-timer-display{font-family:var(--font-mono);font-size:13px;color:var(--ink)}
+.tv-timer-btn{background:var(--s3);color:var(--ink);border:1px solid var(--line-2);border-radius:6px;font:500 12px var(--font-text);padding:4px 8px}
+.tv-user-nav-btn{cursor:pointer;transition:border-color var(--dur),background var(--dur)}
+.tv-user-nav-btn:hover{border-color:var(--line-2);background:var(--s2)}
+
+/* Pages */
+.tv-view{padding:36px 28px 72px;max-width:1240px;margin:0 auto;width:100%}
+.tv-view.active{animation:viewIn .3s var(--smooth)}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Hero: flat, editorial */
+.tv-hero-billboard{border-radius:var(--r-l);border:1px solid var(--line);min-height:300px;overflow:hidden;box-shadow:none}
+.tv-hero-overlay{background:linear-gradient(90deg,rgba(13,13,11,.96) 0%,rgba(13,13,11,.82) 45%,rgba(13,13,11,.35) 100%)}
+.tv-hero-tagline{font:500 12px var(--font-text);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);
+  background:none;border:0;padding:0}
+.tv-hero-title{font:600 clamp(28px,4vw,44px)/1.1 var(--font-display);letter-spacing:-.025em;text-shadow:none}
+.tv-hero-desc{font-size:16px;color:var(--ink-2);max-width:52ch;text-shadow:none}
+.tv-hero-dots .tv-dot{height:3px;border-radius:3px;background:var(--line-2);transition:all .25s var(--smooth)}
+.tv-hero-dots .tv-dot.active{background:var(--gold)}
+
+/* Buttons */
+.tv-btn-primary,.tv-btn-secondary,.tv-dialog-btn-primary,.tv-dialog-btn-secondary,.tv-send-btn,.tv-quiz-btn{
+  font:500 14px/1 var(--font-text);border-radius:var(--r-m);padding:12px 18px;min-height:44px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:none;
+  transition:background var(--dur),border-color var(--dur),transform .12s,color var(--dur)}
+.tv-btn-primary,.tv-dialog-btn-primary,.tv-send-btn{background:var(--gold);color:var(--gold-ink);border:1px solid var(--gold);font-weight:600}
+.tv-btn-primary:hover,.tv-dialog-btn-primary:hover,.tv-send-btn:hover{background:#ffd43b;transform:none}
+.tv-btn-secondary,.tv-dialog-btn-secondary,.tv-quiz-btn{background:transparent;color:var(--ink);border:1px solid var(--line-2)}
+.tv-btn-secondary:hover,.tv-dialog-btn-secondary:hover,.tv-quiz-btn:hover{background:var(--s2);border-color:var(--ink-3)}
+.tv-btn-primary:active,.tv-btn-secondary:active,.tv-send-btn:active,.tv-dialog-btn-primary:active{transform:scale(.98)}
+button:disabled,.tv-send-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Surfaces */
+.tv-card-tile,.tv-subject-poster,.tv-stat-card,.tv-profile-card,.tv-chapter-card,.tv-glass-panel,.tv-flashcard,
+.tv-challenge-box,.tv-fact-banner,.tv-analogy-box,.tv-quest-item,.tv-tray,.tv-chat-dock{
+  background:var(--s1);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+  transition:border-color var(--dur),background var(--dur),transform .25s var(--smooth)}
+.tv-card-tile:hover,.tv-subject-poster:hover,.tv-chapter-card:hover,.tv-stat-card:hover{border-color:var(--line-2);background:var(--s2);transform:translateY(-2px)}
+.tv-card-tile:focus,.tv-subject-poster:focus{transform:none;box-shadow:none}
+.tv-stats-shelf{gap:12px}
+.tv-stat-card{padding:16px 18px}
+.tv-stat-icon-wrap{background:var(--s3)!important;color:var(--ink-2)!important;border-radius:var(--r-s);filter:grayscale(1)}
+.tv-stat-num{font:600 22px/1.1 var(--font-display);letter-spacing:-.02em}
+.tv-stat-label{font:500 12px var(--font-text);color:var(--ink-3);letter-spacing:.02em}
+.tv-carousel-title,.tv-panel-title,.tv-stage-title{font:600 18px/1.3 var(--font-display);letter-spacing:-.015em}
+.tv-carousel-subtitle,.tv-tile-sub,.tv-subject-desc,.tv-persona-sub{color:var(--ink-3);font-size:13px}
+.tv-tile-title,.tv-subject-title{font:600 16px/1.3 var(--font-display);letter-spacing:-.01em}
+.tv-carousel-seeall{color:var(--ink-2);font-size:13px}
+.tv-carousel-seeall:hover{color:var(--gold)}
+.tv-tile-pill,.tv-panel-badge,.tv-session-chip,.tv-chip,.tv-tray-chip,.tv-xray-pill-tag,.tv-dialog-badge{
+  background:var(--s3);color:var(--ink-2);border:1px solid var(--line);border-radius:6px;font:500 12px var(--font-text);padding:3px 8px;box-shadow:none}
+.tv-chip:hover,.tv-tray-chip:hover{border-color:var(--line-2);color:var(--ink)}
+
+/* Tutor / chat */
+.tv-persona-avatar{border-radius:var(--r-m)}
+.tv-msg-bubble{border-radius:var(--r-m);font-size:15px;line-height:1.6;box-shadow:none}
+.tv-msg.user .tv-msg-bubble,.tv-msg-user .tv-msg-bubble{background:var(--s3);border:1px solid var(--line-2);color:var(--ink)}
+.tv-msg.assistant .tv-msg-bubble,.tv-msg-ai .tv-msg-bubble{background:var(--s1);border:1px solid var(--line)}
+.tv-chat-dock{border-radius:var(--r-l);padding:10px}
+
+/* Forms */
+input,textarea,select,.tv-input-field,.tv-dialog-input{
+  font:400 15px/1.4 var(--font-text);color:var(--ink);background:var(--s1);border:1px solid var(--line-2);
+  border-radius:var(--r-m);min-height:44px;padding:10px 14px;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur)}
+input::placeholder,textarea::placeholder{color:var(--ink-3)}
+input:hover,textarea:hover,select:hover{border-color:var(--ink-3)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,197,24,.18);background:var(--s2)}
+.tv-input-label{font:500 13px var(--font-text);color:var(--ink-2);margin-bottom:6px}
+.tv-otp-digit{border-radius:var(--r-m);text-align:center;font:600 22px var(--font-mono)}
+.tv-challenge-opt-btn{background:var(--s2);border:1px solid var(--line-2);border-radius:var(--r-m);color:var(--ink);padding:12px 14px;min-height:44px;
+  transition:border-color var(--dur),background var(--dur)}
+.tv-challenge-opt-btn:hover{border-color:var(--gold)}
+
+/* Dialogs and modals */
+.tv-login-overlay,.tv-chapter-modal-overlay{background:rgba(5,5,4,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.tv-login-dialog,.tv-chapter-modal{background:var(--s1);border:1px solid var(--line-2);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.tv-dialog-title{font:600 22px/1.25 var(--font-display);letter-spacing:-.02em}
+.tv-dialog-sub{color:var(--ink-2);font-size:14px}
+.tv-modal-close-btn{background:var(--s3);border:1px solid var(--line);color:var(--ink-2);border-radius:var(--r-s);transition:color var(--dur),border-color var(--dur)}
+.tv-modal-close-btn:hover{color:var(--ink);border-color:var(--line-2)}
+.tv-google-signin-btn{border-radius:var(--r-m);min-height:44px}
+
+/* Focus, scroll, motion */
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:var(--r-s)}
+::selection{background:rgba(245,197,24,.3)}
 ::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:10px;border:2px solid transparent;background-clip:content-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);background-clip:content-box;border:2px solid transparent}
-.tv-view.active{animation:viewIn .45s var(--smooth)}
-@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}
+
+/* Laptops / tablets */
+@media (max-width:1100px){
+  header.tv-nav{padding:0 18px}
+  .tv-header-actions .tv-timer-shelf,.tv-header-actions .tv-stat-pill:nth-child(3){display:none}
+}
+/* Phones: tabs move to a bottom bar */
+@media (max-width:760px){
+  header.tv-nav{height:54px;padding:0 14px}
+  .tv-header-actions .tv-stat-pill{display:none}
+  #navUserName{display:none}
+  .tv-nav-menu{position:fixed;left:0;right:0;bottom:0;z-index:120;justify-content:space-around;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:rgba(13,13,11,.96);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+  .tv-nav-tab{flex:1;padding:10px 2px;font-size:11px;text-align:center;min-height:44px}
+  .tv-nav-tab.active::after{left:30%;right:30%;bottom:auto;top:-7px}
+  .tv-view{padding:20px 14px 96px}
+  .tv-hero-billboard{min-height:240px}
+  .tv-hero-actions{flex-wrap:wrap}
+  .tv-hero-actions>button{flex:1 1 100%}
+  .tv-stats-shelf,.tv-home-dual-grid,.tv-profile-grid{grid-template-columns:1fr!important}
+  .tv-subject-grid{grid-template-columns:repeat(2,1fr)!important}
+  .tv-login-dialog{width:calc(100vw - 24px)!important;max-width:none}
+}
+html,body{max-width:100vw;overflow-x:hidden}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -2443,7 +2576,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
               </p>
               <button class="tv-btn-secondary" onclick="triggerPhotoUpload()">Select Image</button>
             </div>
-            <img id="activePhoto" src="" style="display:none;" alt="Uploaded Textbook View">
+            <img id="activePhoto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" style="display:none;" alt="Uploaded Textbook View">
           </div>
           <div class="tv-stage-toolbar">
             <div style="display:flex;gap:6px;">
@@ -2636,6 +2769,20 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
   <!-- Hidden Photo Picker -->
   <input type="file" id="masterPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleFilePicked(event)">
 
+  <script>
+    /* If saved data is blocked (private window, strict settings) use memory so the app doesn't crash. */
+    (function () {
+      try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); } catch (e) {
+        var mem = {};
+        try { Object.defineProperty(window, "localStorage", { configurable: true, value: {
+          getItem: function (k) { return Object.prototype.hasOwnProperty.call(mem, k) ? mem[k] : null; },
+          setItem: function (k, v) { mem[k] = String(v); },
+          removeItem: function (k) { delete mem[k]; },
+          clear: function () { mem = {}; }
+        } }); } catch (e2) {}
+      }
+    })();
+  </script>
   <script>
     "use strict";
 
@@ -2951,7 +3098,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
        GEMINI (optional): if a key was pasted at login, photos are read by Gemini.
        Without a key the free in-browser reader (OCR) is used.
        ========================================================================== */
-    const GEMINI_MODEL = "gemini-3.8-flash";
+    let GEMINI_MODEL = "gemini-3.8-flash";
     function getApiKey() { try { return localStorage.getItem("snapstudy_api_key") || ""; } catch (e) { return ""; } }
     async function callClaude({ system, content, max = 1024, signal, think = true, tries = 0 }) {   // talks to Gemini
       let timedOut = false;
@@ -2976,6 +3123,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
         throw new Error("Couldn't reach Gemini. Check your internet and try again.");
       }
       clearTimeout(timer);
+      if (res.status === 404 && GEMINI_MODEL !== "gemini-2.5-flash") {   // model name not found: use the steady one
+        GEMINI_MODEL = "gemini-2.5-flash";
+        return callClaude({ system, content, max, signal: arguments[0].signal, think, tries });
+      }
       if (res.status === 400 && think) {      // this model may not accept the "think less" setting: try once without it
         let m0 = ""; try { m0 = (await res.clone().json()).error.message; } catch (e) {}
         if (/think/i.test(m0)) return callClaude({ system, content, max, signal, think: false, tries });
@@ -3717,41 +3868,75 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
       }
     }
 
+    /* Soft ambient focus music, made live in the browser (no files).
+       Slow warm chords + gentle bell notes + a roomy echo, fading in and out. */
+    const AMBIENT_CHORDS = [
+      [174.61, 261.63, 329.63, 440.00],   // Fmaj7
+      [146.83, 220.00, 293.66, 349.23],   // Dm7
+      [116.54, 174.61, 293.66, 349.23],   // Bb add9
+      [130.81, 196.00, 329.63, 392.00]    // Cmaj
+    ];
+    const AMBIENT_BELLS = [523.25, 587.33, 698.46, 783.99, 880.00, 1046.50]; // F major pentatonic-ish
+
+    function makeRoom(ctx) {
+      const len = ctx.sampleRate * 4, buf = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (let c = 0; c < 2; c++) {
+        const d = buf.getChannelData(c);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+      }
+      const conv = ctx.createConvolver(); conv.buffer = buf; return conv;
+    }
+
     function startAmbientSound() {
       try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const ctx = audioCtx, t0 = ctx.currentTime;
+
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(0.0001, t0);
+        master.gain.exponentialRampToValueAtTime(0.5, t0 + 4);   // slow fade in
+        const tone = ctx.createBiquadFilter();
+        tone.type = "lowpass"; tone.frequency.value = 1400; tone.Q.value = 0.4;
+        const room = makeRoom(ctx), wet = ctx.createGain(), dry = ctx.createGain();
+        wet.gain.value = 0.55; dry.gain.value = 0.6;
+        tone.connect(dry); tone.connect(room); room.connect(wet);
+        dry.connect(master); wet.connect(master); master.connect(ctx.destination);
+
+        const state = { master, nodes: [], timers: [] };
+        window.ambientState = state;
+
+        function playChord(freqs) {
+          const now = ctx.currentTime;
+          freqs.forEach((f, i) => {
+            [-4, 4].forEach(cents => {
+              const o = ctx.createOscillator(), g = ctx.createGain();
+              o.type = "sine"; o.frequency.value = f; o.detune.value = cents;
+              g.gain.setValueAtTime(0.0001, now);
+              g.gain.exponentialRampToValueAtTime(0.035, now + 5);
+              g.gain.setValueAtTime(0.035, now + 8);
+              g.gain.exponentialRampToValueAtTime(0.0001, now + 13);
+              o.connect(g); g.connect(tone); o.start(now); o.stop(now + 13.5);
+              state.nodes.push(o);
+            });
+          });
         }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
+        function playBell() {
+          const now = ctx.currentTime, f = AMBIENT_BELLS[Math.floor(Math.random() * AMBIENT_BELLS.length)];
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = "sine"; o.frequency.value = f;
+          g.gain.setValueAtTime(0.0001, now);
+          g.gain.exponentialRampToValueAtTime(0.05, now + 0.03);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + 4.5);
+          o.connect(g); g.connect(tone); o.start(now); o.stop(now + 4.6);
+          state.nodes.push(o);
         }
 
-        // Generate warm relaxing chord drones (calm ambient study music using Web Audio API)
-        const freqs = [174.61, 220.00, 261.63, 329.63]; // Fmaj7 chord
-        const masterGain = audioCtx.createGain();
-        masterGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        masterGain.connect(audioCtx.destination);
-
-        window.ambientOscs = freqs.map((f, i) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = i % 2 === 0 ? "sine" : "triangle";
-          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-
-          // gentle vibrato lfo
-          const lfo = audioCtx.createOscillator();
-          const lfoGain = audioCtx.createGain();
-          lfo.frequency.value = 0.2 + (i * 0.05);
-          lfoGain.gain.value = 1.5;
-          lfo.connect(osc.frequency);
-          lfo.start();
-
-          gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(masterGain);
-          osc.start();
-          return { osc, lfo };
-        });
+        let step = 0;
+        playChord(AMBIENT_CHORDS[0]);
+        state.timers.push(setInterval(() => { step = (step + 1) % AMBIENT_CHORDS.length; playChord(AMBIENT_CHORDS[step]); }, 10000));
+        const bellLoop = () => { playBell(); state.timers.push(setTimeout(bellLoop, 3500 + Math.random() * 5000)); };
+        state.timers.push(setTimeout(bellLoop, 2500));
 
         isMusicPlaying = true;
         document.getElementById("musicIconWrap").style.background = "rgba(48, 209, 88, 0.25)";
@@ -3765,11 +3950,17 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--tv-accen
     }
 
     function stopAmbientSound() {
-      if (window.ambientOscs) {
-        window.ambientOscs.forEach(o => {
-          try { o.osc.stop(); o.lfo.stop(); } catch(e){}
-        });
-        window.ambientOscs = null;
+      const st = window.ambientState;
+      if (st) {
+        st.timers.forEach(t => { clearInterval(t); clearTimeout(t); });
+        try {
+          const now = audioCtx.currentTime;
+          st.master.gain.cancelScheduledValues(now);
+          st.master.gain.setValueAtTime(Math.max(st.master.gain.value, 0.0001), now);
+          st.master.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);   // gentle fade out
+        } catch(e){}
+        setTimeout(() => st.nodes.forEach(o => { try { o.stop(); } catch(e){} }), 1700);
+        window.ambientState = null;
       }
       isMusicPlaying = false;
       document.getElementById("musicIconWrap").style.background = "rgba(191, 90, 242, 0.15)";

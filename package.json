@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist && cp public/index.html public/styles.css dist/"
+    "build": "echo \"Nothing to build: public/ is served as it is\""
   }
 }
